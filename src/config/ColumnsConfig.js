@@ -1,4 +1,4 @@
-import events from './events';
+import { gameEvents } from './EventsConfig';
 import LodashFind from 'lodash/find';
 import LodashGet from 'lodash/get';
 
@@ -12,7 +12,7 @@ export const renderTeam = (teamId, teams) => {
 };
 
 export const renderEvents = (eventId) => {
-  return LodashGet(LodashFind(events.GameEvents, { 'value': eventId}), 'label', eventId);
+  return LodashGet(LodashFind(gameEvents, { 'value': eventId}), 'text', eventId);
 };
 
 export const gameEventColumns = (batters, pitchers, teams) => {
@@ -25,13 +25,15 @@ export const gameEventColumns = (batters, pitchers, teams) => {
     {
       'dataIndex': 'game_id',
       'title': 'game id',
-      'sorter': (a, b) => a.game_id - b.game_id
+      'sorter': (a, b) => a.game_id.localeCompare(b.game_id)
     },
     {
       'dataIndex': 'event_type',
       'title': 'event type',
       'render': (text, record, index) => renderEvents(text),
-      'sorter': (a, b) => a.event_type - b.event_type
+      'filters': gameEvents,
+      'onFilter': (value, record) => value.localeCompare(record.event_type) === 0,
+      'sorter': (a, b) => a.event_type.localeCompare(b.event_type)
     },
     {
       'dataIndex': 'event_text',
@@ -40,14 +42,6 @@ export const gameEventColumns = (batters, pitchers, teams) => {
     {
       'dataIndex': 'inning',
       'title': 'inning'
-    },
-    {
-      'dataIndex': 'top_of_inning',
-      'title': 'top of inning'
-    },
-    {
-      'dataIndex': 'outs_before_play',
-      'title': 'outs before play'
     },
     {
       'dataIndex': 'batter_id',
@@ -84,6 +78,10 @@ export const gameEventColumns = (batters, pitchers, teams) => {
     {
       'dataIndex': 'away_strike_count',
       'title': 'away strike count'
+    },
+    {
+      'dataIndex': 'outs_before_play',
+      'title': 'outs before play'
     },
     {
       'dataIndex': 'batter_count',
@@ -123,11 +121,49 @@ export const gameEventColumns = (batters, pitchers, teams) => {
     },
     {
       'dataIndex': 'additional_context',
-      'title': 'additional context'
+      'title': 'Additional Context'
     }
   ];
 };
 
+export const batterStatColumns = (batters) => {
+    return [
+      {
+        'dataIndex': 'api',
+        'title': 'API'
+      },
+      {
+        'dataIndex': 'batter_id',
+        'title': 'Batter ID',
+        'render': (text, record, index) => renderPlayer(text, batters)
+      },
+      {
+        'dataIndex': 'count',
+        'title': 'Count'
+      }
+    ];
+};
+
+export const pitcherStatColumns = (pitchers) => {
+    return [
+      {
+        'dataIndex': 'api',
+        'title': 'API'
+      },
+      {
+        'dataIndex': 'pitcher_id',
+        'title': 'Pitcher ID',
+        'render': (text, record, index) => renderPlayer(text, pitchers)
+      },
+      {
+        'dataIndex': 'count',
+        'title': 'Count'
+      }
+    ];
+};
+
 export default {
-    gameEventColumns
+    gameEventColumns,
+    batterStatColumns,
+    pitcherStatColumns
 };
