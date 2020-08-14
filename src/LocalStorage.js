@@ -1,7 +1,3 @@
-/**
- * Sonata Protomatter config keys
- */
-export const configKey = 'config';
 export const cacheKey = 'cache';
 
 /**
@@ -9,23 +5,6 @@ export const cacheKey = 'cache';
  */
 export const clearCache = () => {
     localStorage.removeItem(cacheKey);
-};
-
-/**
- * Load Application state
- */
-export const loadState = () => {
-    return loadData(stateKey);
-};
-
-/**
- * Save Application state
- */
-export const saveState = (state) => {
-    clearCache();
-
-    // Save new state
-    saveData(stateKey, state);
 };
 
 /**

@@ -1,0 +1,23 @@
+{
+    "extends": ["eslint:recommended", "standard", "standard-react"],
+    "parser": "babel-eslint",
+    "parserOptions": {
+        "ecmaVersion": 9
+    },
+    "env": {
+        "browser": true,
+        "node": true,
+        "es6": true
+    },
+    "rules": {
+        "curly": [2, "all"],
+        "object-curly-spacing": "off",
+        "indent": ["error", 4, { "SwitchCase": 1 }],
+        "semi": [2, "always"],
+        "react/jsx-space-before-closing": null,
+        "react/jsx-indent": "off",
+        "react/jsx-indent-props": ["error", 4],
+        "react/jsx-tag-spacing": ["error", { "beforeSelfClosing": "always" }],
+        "react/no-unused-prop-types": "off"
+    }
+}
