@@ -16,7 +16,7 @@ export const gameEvents = [
         text: 'Stolen Base'
     }, {
         value: 'CAUGHT_STEALING',
-        text: 'Caugh Stealing'
+        text: 'Caught Stealing'
     }, {
         value: 'PICKOFF',
         text: 'Pickoff'

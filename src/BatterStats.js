@@ -26,14 +26,19 @@ class BatterStats extends React.Component {
     }
 
     getPlayers() {
+        Blaseball.getTeams().then(/* istanbul ignore next */ data => {
+            data && this.setState({ teams: data});
+        }).catch(/* istanbul ignore next */ error => Promise.reject(error));
         Blaseball.getPlayers('lineup').then(/* istanbul ignore next */ data => {
             data && this.setState({ batters: data});
         }).catch(/* istanbul ignore next */ error => Promise.reject(error));
     }
 
     onFinish (values) {
+        const { batters, teams } = this.state;
+
         if (values.api) {
-            return sibr.getPlayerAPI(values)
+            return sibr.getPlayerAPI(values, batters, teams)
                 .then(results => {
                     console.log(results);
                     if (results && results.results) {

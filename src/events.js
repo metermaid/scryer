@@ -11,14 +11,16 @@ const formLayout = {
 };
 
 const tableLayout = {
-  scroll: { x: true }
+  scroll: { x: 'max-content' }
 };
 
 class Events extends React.Component {
     constructor (props) {
         super(props);
-        this.state = { results: null, batters: null, pitchers: null };
+        this.state = { results: null, batters: [], pitchers: [], teams: [], searchText: '', searchedColumn: '' };
         this.onFinish = this.onFinish.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
+        this.handleReset = this.handleReset.bind(this);
     }
 
     componentDidMount () {
@@ -38,8 +40,11 @@ class Events extends React.Component {
     }
 
     onFinish (values) {
+        const { batters, pitchers, teams } = this.state;
+        const players = [...batters, ...pitchers];
+
         if (values.gameId || values.pitcherId || values.batterId) {
-            return sibr.getEvents(values)
+            return sibr.getEvents(values, players, teams)
                 .then(results => {
                     console.log(results);
                     this.setState({ results: results && results.results, error: null });
@@ -50,8 +55,18 @@ class Events extends React.Component {
         }
     }
 
+    handleSearch (selectedKeys, confirm, dataIndex) {
+        confirm();
+        this.setState({ searchText: selectedKeys[0], searchedColumn: dataIndex });
+    }
+
+    handleReset (clearFilters) {
+        clearFilters();
+        this.setState({ searchText: '' });
+    }
+
     render () {
-      const { error, results, batters, pitchers, teams } = this.state;
+      const { error, results, batters, pitchers, teams, searchInput } = this.state;
       const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
       const errorMessage = error ? <Alert closable message={error} type='error' /> : '';
       return (
@@ -76,7 +91,7 @@ class Events extends React.Component {
                 <div className='results-list'>
                     {csvLink}
                     <Table dataSource={results} 
-                        columns={gameEventColumns(batters, pitchers, teams)}
+                        columns={gameEventColumns(batters, pitchers, teams, searchInput, this.handleSearch, this.handleReset)}
                         {...tableLayout} />
                 </div>
             </Layout.Content>

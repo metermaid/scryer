@@ -274,8 +274,6 @@ export const getPlayerObject = (player, team) => {
     };
 };
 
-
-
 const getBonusPlayers = (team, type) => {
     return bonusPlayers.filter(player => !player.team.localeCompare(team.fullName) && !player.position.localeCompare(type))
         .map(player => getPlayerObject(player, team));
