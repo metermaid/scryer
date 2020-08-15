@@ -54,6 +54,7 @@ const addEventCols = (data, players, teams) => {
     return {
         results: results.map(row => {
             const newValues = {
+                key: row.id,
                 batter_team_name: row.batter_team_id ? renderTeam(row.batter_team_id, teams) : '',
                 pitcher_team_name: row.pitcher_team_id ? renderTeam(row.pitcher_team_id, teams) : '',
                 batter_name: row.batter_id ? renderPlayer(row.batter_id, players) : '',
@@ -68,8 +69,9 @@ const addEventCols = (data, players, teams) => {
 const addPlayerCols = (data, players, teams) => {
     const { results, ...remainder } = data;
     return {
-        results: results.map(row => {
+        results: results.map((row, index) => {
             const newValues = {
+                key: `${row.batter_id}-${index}`,
                 batter_team_name: row.batter_id ? renderPlayerTeam(row.batter_id, players) : '',
                 pitcher_team_name: row.pitcher_id ? renderPlayerTeam(row.pitcher_id, players) : '',
                 batter_name: row.batter_id ? renderPlayer(row.batter_id, players) : '',

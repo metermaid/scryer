@@ -76,6 +76,7 @@ class PitcherStats extends React.Component {
                 <div className='results-list'>
                     {csvLink}
                     <Table dataSource={results} 
+                        scroll={{ x: 'max-content' }}
                         columns={pitcherStatColumns(pitchers)}
                         />
                 </div>

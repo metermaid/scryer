@@ -77,10 +77,10 @@ class Events extends React.Component {
                         <Input placeholder='dc767612-eb77-417b-8d2f-c21eb4dab868' />
                     </Form.Item>
                     <Form.Item name='pitcherId' label='Pitcher'>
-                        <Select placeholder='Pitcher' options={pitchers} showSearch allowClear optionFilterProp='searchKey' />
+                        <Select placeholder='Pitcher' options={pitchers} showSearch allowClear optionFilterProp='searchkey' />
                     </Form.Item>
                     <Form.Item name='batterId' label='Batter'>
-                        <Select placeholder='Batter' options={batters} showSearch allowClear optionFilterProp='searchKey' />
+                        <Select placeholder='Batter' options={batters} showSearch allowClear optionFilterProp='searchkey' />
                     </Form.Item>
                     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
                         <Button type='primary' htmlType='submit'>

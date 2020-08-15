@@ -268,7 +268,7 @@ export const getPlayerObject = (player, team) => {
     return {
         value: player._id,
         name: player.name,
-        searchKey: `${player.name} ${player._id} ${team.nickname}`,
+        searchkey: `${player.name} ${player._id} ${team.nickname}`,
         label: `${player.name} (${String.fromCodePoint(team.emoji)} ${team.nickname})`,
         team: team.nickname
     };
