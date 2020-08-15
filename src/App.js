@@ -1,6 +1,7 @@
 import React from 'react';
 import { HashRouter, Route } from 'react-router-dom';
 import { Layout } from 'antd';
+import About from './About';
 import Menu from './Menu';
 import Events from './Events';
 import BatterStats from './BatterStats';
@@ -19,6 +20,7 @@ class App extends React.Component {
                         <Route exact path='/' component={Home} />
                         <Route path='/batter' component={Batter} />
                         <Route path='/pitcher' component={Pitcher} />
+                        <Route path='/about' component={About} />
                     </Layout>
                 </div>
             </HashRouter>
