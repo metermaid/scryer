@@ -10,15 +10,17 @@ import { batterAPIs } from './config/APIConfig';
 import { batterStatColumns } from './config/ColumnsConfig';
 
 const formLayout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 }
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 }
 };
 
 class BatterStats extends React.Component {
     constructor (props) {
         super(props);
-        this.state = { error: null, batters: null, teams: null, results: [] };
+        this.state = { error: null, batters: [], teams: [], results: [] };
         this.onFinish = this.onFinish.bind(this);
+        this.handleSearch = this.handleSearch.bind(this);
+        this.handleReset = this.handleReset.bind(this);
     }
 
     componentDidMount () {
@@ -52,8 +54,18 @@ class BatterStats extends React.Component {
         }
     }
 
+    handleSearch (selectedKeys, confirm, dataIndex) {
+        confirm();
+        this.setState({ searchText: selectedKeys[0], searchedColumn: dataIndex });
+    }
+
+    handleReset (clearFilters) {
+        clearFilters();
+        this.setState({ searchText: '' });
+    }
+
     render () {
-      const { error, batters, results } = this.state;
+      const { error, batters, teams, results, searchInput } = this.state;
       const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
       const errorMessage = error ? <Alert closable message={error} type='error' /> : '';
 
@@ -75,9 +87,10 @@ class BatterStats extends React.Component {
                 </Form>
                 <div className='results-list'>
                     {csvLink}
-                    <Table dataSource={results} 
+                    <Table dataSource={results}
+                        bordered
                         scroll={{ x: 'max-content' }}
-                        columns={batterStatColumns(batters)}
+                        columns={batterStatColumns(batters, teams, searchInput, this.handleSearch, this.handleReset)}
                         />
                 </div>
             </Layout.Content>

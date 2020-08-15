@@ -6,12 +6,13 @@ import sibr from './services/SIBR';
 import { gameEventColumns } from './config/ColumnsConfig';
 
 const formLayout = {
-  labelCol: { span: 8 },
-  wrapperCol: { span: 16 }
+    labelCol: { span: 8 },
+    wrapperCol: { span: 16 }
 };
 
 const tableLayout = {
-  scroll: { x: 'max-content' }
+    bordered: true,
+    scroll: { x: 'max-content' }
 };
 
 class Events extends React.Component {

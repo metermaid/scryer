@@ -14,6 +14,24 @@ export const renderArray = (array) => {
   return array.map(line => (<div>{line}</div>));
 };
 
+const getColumnAlphaSortProps = (field_name) => ({
+  sorter: (a, b) => LodashGet(a, field_name, '').localeCompare(LodashGet(b, field_name, ''))
+});
+
+const getColumnNumericalSortProps = (field_name) => ({
+  sorter: (a, b) => LodashGet(a, field_name) - LodashGet(b, field_name)
+});
+
+const getColumnPlayerFilterProps = (players, field_name) => ({
+  filters: players.map(row => { return { value: row.name, text: row.name } }),
+  onFilter: (value, record) => value.localeCompare(LodashGet(record, field_name)) === 0
+});
+
+const getColumnTeamFilterProps = (teams, field_name) => ({
+  filters: LodashSortBy(teams.map(row => { return { value: row.nickname, text: row.fullName } }), ['text']),
+  onFilter: (value, record) => LodashGet(record, field_name).includes(value)
+});
+
 const getColumnSearchProps = (dataIndex, searchInput, handleSearch, handleReset) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
@@ -58,12 +76,12 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
     {
       'dataIndex': 'id',
       'title': 'ID',
-      'sorter': (a, b) => a.id - b.id
+      ...getColumnNumericalSortProps('id'),
+      ...getColumnSearchProps('id', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'game_id',
       'title': 'Game ID',
-      'sorter': (a, b) => a.game_id.localeCompare(b.game_id),
       ...getColumnSearchProps('game_id', searchInput, handleSearch, handleReset)
     },
     {
@@ -72,7 +90,7 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
       'render': (text, record, index) => renderEvents(text),
       'filters': gameEvents,
       'onFilter': (value, record) => value.localeCompare(record.event_type) === 0,
-      'sorter': (a, b) => a.event_type.localeCompare(b.event_type)
+      ...getColumnAlphaSortProps('event_type')
     },
     {
       'dataIndex': 'event_text',
@@ -84,140 +102,192 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
     {
       'dataIndex': 'batter_name',
       'title': 'Batter Name',
-      'filters': batters.map(row => { return { value: row.name, text: row.name } }),
-      'onFilter': (value, record) => value.localeCompare(record.batter_name) === 0
+      ...getColumnPlayerFilterProps(batters, 'batter_name'),
+      ...getColumnAlphaSortProps('batter_name')
     },
     {
       'dataIndex': 'batter_team_name',
       'title': 'Batter Team Name',
-      'filters': LodashSortBy(teams.map(row => { return { value: row.nickname, text: row.fullName } }), ['text']),
-      'onFilter': (value, record) => record.batter_team_name.includes(value)
+      ...getColumnTeamFilterProps(teams, 'batter_team_name'),
+      ...getColumnAlphaSortProps('batter_team_name')
     },
     {
       'dataIndex': 'pitcher_name',
       'title': 'Pitcher Name',
-      'filters': pitchers.map(row => { return { value: row.name, text: row.name } }),
-      'onFilter': (value, record) => value.localeCompare(record.pitcher_name) === 0
+      ...getColumnPlayerFilterProps(pitchers, 'pitcher_name'),
+      ...getColumnAlphaSortProps('pitcher_name')
     },
     {
       'dataIndex': 'pitcher_team_name',
       'title': 'Pitcher Team Name',
-      'filters': LodashSortBy(teams.map(row => { return { value: row.nickname, text: row.fullName } }), ['text']),
-      'onFilter': (value, record) => record.pitcher_team_name.includes(value)
+      ...getColumnTeamFilterProps(teams, 'pitcher_team_name'),
+      ...getColumnAlphaSortProps('pitcher_team_name')
     },
     {
       'dataIndex': 'inning',
-      'title': 'Inning'
+      'title': 'Inning',
+      ...getColumnNumericalSortProps('inning'),
+      ...getColumnSearchProps('inning', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'home_score',
-      'title': 'Home Score'
+      'title': 'Home Score',
+      ...getColumnNumericalSortProps('home_score'),
+      ...getColumnSearchProps('home_score', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'away_score',
-      'title': 'Away Score'
+      'title': 'Away Score',
+      ...getColumnNumericalSortProps('away_score'),
+      ...getColumnSearchProps('away_score', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'home_strike_count',
-      'title': 'Home Strike Count'
+      'title': 'Home Strike Count',
+      ...getColumnNumericalSortProps('home_strike_count'),
+      ...getColumnSearchProps('home_strike_count', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'away_strike_count',
-      'title': 'Away Strike Count'
+      'title': 'Away Strike Count',
+      ...getColumnNumericalSortProps('away_strike_count'),
+      ...getColumnSearchProps('away_strike_count', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'outs_before_play',
-      'title': 'Outs before Play'
+      'title': 'Outs before Play',
+      ...getColumnNumericalSortProps('outs_before_play'),
+      ...getColumnSearchProps('outs_before_play', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'batter_count',
-      'title': 'Batter Count'
+      'title': 'Batter Count',
+      ...getColumnNumericalSortProps('batter_count'),
+      ...getColumnSearchProps('batter_count', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'pitches',
-      'title': 'Pitches'
+      'title': 'Pitches',
+      ...getColumnAlphaSortProps(['pitches', 0]),
+      'sorter': (a, b) => LodashGet(a, 'pitches', []).join('').localeCompare(LodashGet(b, 'pitches', []).join('')),
+      ...getColumnSearchProps('pitches', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'total_strikes',
-      'title': 'Total Strikes'
+      'title': 'Total Strikes',
+      ...getColumnNumericalSortProps('total_strikes'),
+      ...getColumnSearchProps('total_strikes', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'total_balls',
-      'title': 'Total Balls'
+      'title': 'Total Balls',
+      ...getColumnNumericalSortProps('total_balls'),
+      ...getColumnSearchProps('total_balls', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'bases_hit',
-      'title': 'Bases Hit'
+      'title': 'Bases Hit',
+      ...getColumnNumericalSortProps('bases_hit'),
+      ...getColumnSearchProps('bases_hit', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'runs_batted_in',
-      'title': 'Runs Batted In'
+      'title': 'Runs Batted In',
+      ...getColumnNumericalSortProps('runs_batted_in'),
+      ...getColumnSearchProps('runs_batted_in', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'outs_on_play',
-      'title': 'Outs on Play'
+      'title': 'Outs on Play',
+      ...getColumnNumericalSortProps('outs_on_play'),
+      ...getColumnSearchProps('outs_on_play', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'errors_on_play',
-      'title': 'Errors on Play'
+      'title': 'Errors on Play',
+      ...getColumnNumericalSortProps('errors_on_play'),
+      ...getColumnSearchProps('errors_on_play', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'batter_base_after_play',
-      'title': 'Batter Base After Play'
+      'title': 'Batter Base After Play',
+      ...getColumnNumericalSortProps('batter_base_after_play'),
+      ...getColumnSearchProps('batter_base_after_play', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'additional_context',
-      'title': 'Additional Context'
+      'title': 'Additional Context',
+      ...getColumnSearchProps('additional_context', searchInput, handleSearch, handleReset)
     }
   ];
 };
 
-export const batterStatColumns = () => {
+export const batterStatColumns = (batters, teams, searchInput, handleSearch, handleReset) => {
     return [
       {
         'dataIndex': 'api',
-        'title': 'API'
+        'title': 'API',
+        ...getColumnAlphaSortProps('api'),
+        ...getColumnSearchProps('api', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'batter_id',
-        'title': 'Batter ID'
+        'title': 'Batter ID',
+        ...getColumnAlphaSortProps('batter_id'),
+        ...getColumnSearchProps('batter_id', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'batter_name',
-        'title': 'Batter Name'
+        'title': 'Batter Name',
+        ...getColumnAlphaSortProps('batter_name'),
+        ...getColumnPlayerFilterProps(batters, 'batter_name')
       },
       {
         'dataIndex': 'batter_team_name',
-        'title': 'Batter Team Name'
+        'title': 'Batter Team Name',
+        ...getColumnAlphaSortProps('batter_team_name'),
+        ...getColumnTeamFilterProps(teams, 'batter_team_name')
       },
       {
         'dataIndex': 'count',
-        'title': 'Count'
+        'title': 'Count',
+        ...getColumnNumericalSortProps('count'),
+        ...getColumnSearchProps('count', searchInput, handleSearch, handleReset)
       }
     ];
 };
 
-export const pitcherStatColumns = () => {
+export const pitcherStatColumns = (pitchers, teams, searchInput, handleSearch, handleReset) => {
     return [
       {
         'dataIndex': 'api',
-        'title': 'API'
+        'title': 'API',
+        ...getColumnAlphaSortProps('api'),
+        ...getColumnSearchProps('api', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'pitcher_id',
-        'title': 'Pitcher ID'
+        'title': 'Pitcher ID',
+        ...getColumnAlphaSortProps('pitcher_id'),
+        ...getColumnSearchProps('pitcher_id', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'pitcher_name',
-        'title': 'Pitcher Name'
+        'title': 'Pitcher Name',
+        ...getColumnAlphaSortProps('pitcher_name'),
+        ...getColumnPlayerFilterProps(pitchers, 'pitcher_name')
       },
       {
         'dataIndex': 'pitcher_team_name',
-        'title': 'Pitcher Team Name'
+        'title': 'Pitcher Team Name',
+        ...getColumnAlphaSortProps('pitcher_team_name'),
+        ...getColumnTeamFilterProps(teams, 'pitcher_team_name')
       },
       {
         'dataIndex': 'count',
-        'title': 'Count'
+        'title': 'Count',
+        ...getColumnNumericalSortProps('count'),
+        ...getColumnSearchProps('count', searchInput, handleSearch, handleReset)
       }
     ];
 };
