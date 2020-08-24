@@ -45,7 +45,7 @@ const renderPlayerTeam = (playerId, players) => {
 };
 
 const renderTeam = (teamId, teams) => {
-  const team = LodashFind(teams, { '_id': teamId});
+  const team = LodashFind(teams, { 'id': teamId});
   return `${String.fromCodePoint(LodashGet(team, 'emoji', ''))} ${LodashGet(team, 'fullName', teamId)}`
 };
 
