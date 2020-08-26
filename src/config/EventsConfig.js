@@ -69,7 +69,51 @@ export const playerEvents = [
     }
 ];
 
+export const weatherTypes = [
+    {
+        value: 0,
+        text: 'Void'
+    }, {
+        value: 1,
+        text: 'Sunny'
+    }, {
+        value: 2,
+        text: 'Overcast'
+    }, {
+        value: 3,
+        text: 'Rainy'
+    }, {
+        value: 4,
+        text: 'Sandstorm'
+    }, {
+        value: 5,
+        text: 'Snowy'
+    }, {
+        value: 6,
+        text: 'Acidic'
+    }, {
+        value: 7,
+        text: 'Solar Eclipse'
+    }, {
+        value: 8,
+        text: 'Glitter'
+    }, {
+        value: 9,
+        text: 'Bloodwind'
+    }, {
+        value: 10,
+        text: 'Peanuts'
+    }, {
+        value: 11,
+        text: 'Bird'
+    }, {
+        value: 12,
+        text: 'Feedback'
+    }
+];
+
 export default {
     gameEvents,
-    playerEvents
+    playerEvents,
+    weatherTypes
 };

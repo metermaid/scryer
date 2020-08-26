@@ -19,7 +19,7 @@ export const getGames = (season, day) => {
     if (cache) { return cache; }
 
     const results = axios.get(`https://cors-anywhere.herokuapp.com/https://blaseball.com/database/games`, { params: { season, day }})
-        .then(response => cacheService(dataKey, response && response.data));
+        .then(response => cacheService(dataKey, response && response.data.map(game => parseGameObject(game))));
 
     return cachePromise(dataKey, results);
 };
@@ -58,6 +58,13 @@ const processTeam = (team, type) => {
             ));
 
     return cachePromise(dataKey, results);
+};
+
+export const parseGameObject = (game) => {
+    return {
+        ...game,
+        match: `${String.fromCodePoint(game.homeTeamEmoji)} ${game.homeTeamNickname} - ${String.fromCodePoint(game.awayTeamEmoji)} ${game.awayTeamNickname}`
+    };
 };
 
 export const getPlayerObject = (player, team) => {

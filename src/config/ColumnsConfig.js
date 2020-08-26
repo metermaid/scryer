@@ -1,5 +1,5 @@
 import React from 'react';
-import { gameEvents } from './EventsConfig';
+import { weatherTypes, gameEvents } from './EventsConfig';
 import { Button, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import LodashFind from 'lodash/find';
@@ -8,6 +8,11 @@ import LodashSortBy from 'lodash/sortBy';
 
 export const renderEvents = (eventId) => {
   return LodashGet(LodashFind(gameEvents, { 'value': eventId}), 'text', eventId);
+};
+
+
+export const renderWeather = (weatherId) => {
+  return LodashGet(LodashFind(weatherTypes, { 'value': weatherId}), 'text', weatherId);
 };
 
 export const renderArray = (array) => {
@@ -309,18 +314,10 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
         'render': (text, record, index) => text+1
       },
       {
-        'dataIndex': 'homeTeam',
-        'title': 'homeTeam',
-        'render': (text, record, index) => renderTeam(text, teams),
-        ...getColumnTeamFilterProps(teams, 'homeTeam'),
-        ...getColumnAlphaSortProps('homeTeam')
-      },
-      {
-        'dataIndex': 'awayTeam',
-        'title': 'awayTeam',
-        'render': (text, record, index) => renderTeam(text, teams),
-        ...getColumnTeamFilterProps(teams, 'awayTeam'),
-        ...getColumnAlphaSortProps('awayTeam')
+        'dataIndex': 'match',
+        'title': 'match',
+        ...getColumnTeamFilterProps(teams, 'match'),
+        ...getColumnSearchProps('match', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'homeScore',
@@ -381,7 +378,8 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       },
       {
         'dataIndex': 'weather',
-        'title': 'weather'
+        'title': 'weather',
+        'render': (text, record, index) => renderWeather(text)
       }
     ];
 };
