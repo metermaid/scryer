@@ -11,6 +11,19 @@ export const getPlayers = (type) => {
     return getPlayersFromBlaseball(type).then(data => LodashSortBy(LodashFlatten(data), ['name'])).catch((error) => getBackupPlayers(type));
 };
 
+export const getGames = (season, day) => {
+    const dataKey = 'games' + season + day;
+    const cache = checkCache(dataKey);
+
+    /* istanbul ignore next line */
+    if (cache) { return cache; }
+
+    const results = axios.get(`https://cors-anywhere.herokuapp.com/https://blaseball.com/database/games`, { params: { season, day }})
+        .then(response => cacheService(dataKey, response && response.data));
+
+    return cachePromise(dataKey, results);
+};
+
 export const getTeams = () => {
     const dataKey = 'allTeams';
     const cache = checkCache(dataKey);
@@ -74,5 +87,6 @@ const getBonusPlayers = (team, type) => {
 
 export default {
     getPlayers,
-    getTeams
+    getTeams,
+    getGames
 };

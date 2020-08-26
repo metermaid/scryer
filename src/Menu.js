@@ -10,6 +10,7 @@ class Menu extends React.Component {
                 <AntMenu.Item key='/'><Link to='/'>Event Logs</Link></AntMenu.Item>
                 <AntMenu.Item key='/batter'><Link to='/batter'>Batter Stats</Link></AntMenu.Item>
                 <AntMenu.Item key='/pitcher'><Link to='/pitcher'>Pitcher Stats</Link></AntMenu.Item>
+                <AntMenu.Item key='/games'><Link to='/games'>Games</Link></AntMenu.Item>
                 <AntMenu.Item key='/about'><Link to='/about'>About</Link></AntMenu.Item>
             </AntMenu>
         );

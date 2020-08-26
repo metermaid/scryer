@@ -6,6 +6,7 @@ import Menu from './Menu';
 import Events from './Events';
 import BatterStats from './BatterStats';
 import PitcherStats from './PitcherStats';
+import Games from './Games';
 
 class App extends React.Component {
     render() {
@@ -17,9 +18,10 @@ class App extends React.Component {
                             <h1>Blaseball Scryer</h1>
                             <Menu />
                         </Layout.Header>
-                        <Route exact path='/' component={Home} />
-                        <Route path='/batter' component={Batter} />
-                        <Route path='/pitcher' component={Pitcher} />
+                        <Route exact path='/' component={Events} />
+                        <Route path='/batter' component={BatterStats} />
+                        <Route path='/pitcher' component={PitcherStats} />
+                        <Route path='/games' component={Games} />
                         <Route path='/about' component={About} />
                     </Layout>
                 </div>
@@ -27,10 +29,5 @@ class App extends React.Component {
         );
     }
 }
-
-
-const Home = () => <Events />
-const Batter = () => <BatterStats />
-const Pitcher = () => <PitcherStats />
 
 export default App;

@@ -14,6 +14,15 @@ export const renderArray = (array) => {
   return array.map(line => (<div>{line}</div>));
 };
 
+export const renderPlayer = (playerId, players) => {
+  return LodashGet(LodashFind(players, { 'value': playerId}), 'label', playerId)
+};
+
+export const renderTeam = (teamId, teams) => {
+  const team = LodashFind(teams, { 'id': teamId});
+  return `${String.fromCodePoint(LodashGet(team, 'emoji', ''))} ${LodashGet(team, 'nickname', teamId)}`
+};
+
 const getColumnAlphaSortProps = (field_name) => ({
   sorter: (a, b) => LodashGet(a, field_name, '').localeCompare(LodashGet(b, field_name, ''))
 });
@@ -292,7 +301,87 @@ export const pitcherStatColumns = (pitchers, teams, searchInput, handleSearch, h
     ];
 };
 
+export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSearch, handleReset) => {
+    return [
+      {
+        'dataIndex': 'id',
+        'title': 'id'
+      },
+      {
+        'dataIndex': 'season',
+        'title': 'season',
+        'render': (text, record, index) => text+1
+      },
+      {
+        'dataIndex': 'day',
+        'title': 'day',
+        'render': (text, record, index) => text+1
+      },
+      {
+        'dataIndex': 'homeTeam',
+        'title': 'homeTeam',
+        'render': (text, record, index) => renderTeam(text, teams)
+      },
+      {
+        'dataIndex': 'homePitcher',
+        'title': 'homePitcher',
+        'render': (text, record, index) => renderPlayer(text, pitchers)
+      },
+      {
+        'dataIndex': 'awayTeam',
+        'title': 'awayTeam',
+        'render': (text, record, index) => renderTeam(text, teams)
+      },
+      {
+        'dataIndex': 'awayPitcher',
+        'title': 'awayPitcher',
+        'render': (text, record, index) => renderPlayer(text, pitchers)
+      },
+      {
+        'dataIndex': 'homeScore',
+        'title': 'homeScore'
+      },
+      {
+        'dataIndex': 'awayScore',
+        'title': 'awayScore'
+      },
+      {
+        'dataIndex': 'homeOdds',
+        'title': 'homeOdds'
+      },
+      {
+        'dataIndex': 'awayOdds',
+        'title': 'awayOdds'
+      },
+      {
+        'dataIndex': 'homeStrikes',
+        'title': 'homeStrikes'
+      },
+      {
+        'dataIndex': 'awayStrikes',
+        'title': 'awayStrikes'
+      },
+      {
+        'dataIndex': 'inning',
+        'title': 'inning'
+      },
+      {
+        'dataIndex': 'outcomes',
+        'title': 'outcomes'
+      },
+      {
+        'dataIndex': 'shame',
+        'title': 'shame'
+      },
+      {
+        'dataIndex': 'weather',
+        'title': 'weather'
+      }
+    ];
+};
+
 export default {
+    gameAPIColumns,
     gameEventColumns,
     batterStatColumns,
     pitcherStatColumns
