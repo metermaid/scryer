@@ -18,7 +18,7 @@ export const getGames = (season, day) => {
     /* istanbul ignore next line */
     if (cache) { return cache; }
 
-    const results = axios.get(`https://cors-anywhere.herokuapp.com/https://blaseball.com/database/games`, { params: { season, day }})
+    const results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/games`, { params: { season, day }})
         .then(response => cacheService(dataKey, response && response.data.map(game => parseGameObject(game))));
 
     return cachePromise(dataKey, results);
@@ -31,7 +31,7 @@ export const getTeams = () => {
     /* istanbul ignore next line */
     if (cache) { return cache; }
 
-    const results = axios.get(`https://cors-anywhere.herokuapp.com/https://blaseball.com/database/allTeams`)
+    const results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/allTeams`)
         .then(response => cacheService(dataKey, response && response.data));
 
     return cachePromise(dataKey, results);
@@ -51,7 +51,7 @@ const processTeam = (team, type) => {
     /* istanbul ignore next line */
     if (cache) { return cache; }
     const ids = LodashGet(team, type).join(',');
-    const results = axios.get(`https://cors-anywhere.herokuapp.com/https://blaseball.com/database/players`, { params: { ids: ids }})
+    const results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/players`, { params: { ids: ids }})
         .then(response => 
             cacheService(dataKey, 
                 response && response.data && LodashUniq(response.data.map(player => getPlayerObject(player, team)).concat(getBonusPlayers(team, type)))
