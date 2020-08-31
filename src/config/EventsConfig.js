@@ -109,6 +109,9 @@ export const weatherTypes = [
     }, {
         value: 12,
         text: 'Feedback'
+    }, {
+        value: 13,
+        text: 'Reverb'
     }
 ];
 

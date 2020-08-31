@@ -48,6 +48,9 @@ class Games extends React.Component {
     }
 
     onFinish (values) {
+        const dayPath = values.day ? `&day=${values.day}` : '';
+        const pathname = `?season=${values.season}${dayPath}`;
+        this.props.history.push({ search: pathname });
         if (values.season && values.day) {
             return this.getGame(parseInt(values.season) - 1, parseInt(values.day) - 1);
         } else if (values.season) {
@@ -74,19 +77,23 @@ class Games extends React.Component {
     }
 
     render () {
-      const { batters, pitchers, teams, error, results, searchInput } = this.state;
-      const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
-      const errorMessage = error ? <Alert closable message={error} type='error' /> : '';
+        const search = this.props.location.search;
+        const defaultSeason = new URLSearchParams(search).get('season') || 5;
+        const defaultDay = new URLSearchParams(search).get('day') || new URLSearchParams(search).get('season') ? '' : 4;
 
-      return (
+        const { batters, pitchers, teams, error, results, searchInput } = this.state;
+        const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
+        const errorMessage = error ? <Alert closable message={error} type='error' /> : '';
+
+        return (
             <Layout.Content>
                 { errorMessage }
                 <Form onFinish={this.onFinish} {...formLayout} style={{ padding: '10px 0' }}>
-                    <Form.Item name='season' label='Season' initialValue={5}>
+                    <Form.Item name='season' label='Season' initialValue={defaultSeason}>
                         <InputNumber placeholder={5} min={1} max={5} />
                     </Form.Item>
 
-                    <Form.Item name='day' label='Day' initialValue={4}>
+                    <Form.Item name='day' label='Day' initialValue={defaultDay}>
                         <InputNumber placeholder={3} min={1} max={150} />
                     </Form.Item>
                     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -104,7 +111,7 @@ class Games extends React.Component {
                         />
                 </div>
             </Layout.Content>
-      );
+        );
     }
 }
 

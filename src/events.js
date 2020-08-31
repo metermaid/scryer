@@ -18,7 +18,15 @@ const tableLayout = {
 class Events extends React.Component {
     constructor (props) {
         super(props);
-        this.state = { results: null, batters: [], pitchers: [], teams: [], searchText: '', searchedColumn: '', advancedMode: false };
+        this.state = {
+            results: null,
+            batters: [],
+            pitchers: [],
+            teams: [],
+            searchText: '',
+            searchedColumn: '',
+            advancedMode: false
+        };
         this.onFinish = this.onFinish.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleReset = this.handleReset.bind(this);
@@ -53,7 +61,6 @@ class Events extends React.Component {
 
             return sibr.getEvents(values, players, teams)
                 .then(results => {
-                    console.log(results);
                     this.setState({ results: results && results.results, error: null });
                 })
                 .catch(/* istanbul ignore next */ error => this.setState({ error }));

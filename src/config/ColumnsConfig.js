@@ -86,7 +86,7 @@ const getColumnSearchProps = (dataIndex, searchInput, handleSearch, handleReset)
     }
   });
 
-const getColumnGameAPISearchProps = (dataIndex, searchInput, handleSearch, handleReset) => ({
+const getColumnZeroIndexedSearchProps = (dataIndex, searchInput, handleSearch, handleReset) => ({
     filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
       <div style={{ padding: 8 }}>
         <Input
@@ -257,12 +257,16 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
     {
       'dataIndex': 'season',
       'title': 'Season',
-      ...getColumnNumericalSortAndSearchPropsShim('season')
+      'render': (text, record, index) => text+1,
+      ...getColumnNumericalSortProps('season'),
+      ...getColumnZeroIndexedSearchProps('season', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'day',
       'title': 'Day',
-      ...getColumnNumericalSortAndSearchPropsShim('day')
+      'render': (text, record, index) => text+1,
+      ...getColumnNumericalSortProps('day'),
+      ...getColumnZeroIndexedSearchProps('day', searchInput, handleSearch, handleReset)
     },
     ...advancedModeColumnsHead,
     {
@@ -342,14 +346,14 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
         'title': 'season',
         'render': (text, record, index) => text+1,
         ...getColumnNumericalSortProps('season'),
-        ...getColumnGameAPISearchProps('season', searchInput, handleSearch, handleReset)
+        ...getColumnZeroIndexedSearchProps('season', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'day',
         'title': 'day',
         'render': (text, record, index) => text+1,
         ...getColumnNumericalSortProps('day'),
-        ...getColumnGameAPISearchProps('day', searchInput, handleSearch, handleReset)
+        ...getColumnZeroIndexedSearchProps('day', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'match',
