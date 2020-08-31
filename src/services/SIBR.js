@@ -40,13 +40,17 @@ const renderPlayer = (playerId, players) => {
   return LodashGet(LodashFind(players, { 'value': playerId}), 'name', playerId)
 };
 
+const renderPlayerWithTeam = (playerId, players, teamId, team) => {
+    return `${renderPlayer(playerId, players)} (${renderTeam(teamId, team)})`;
+};
+
 const renderPlayerTeam = (playerId, players) => {
   return LodashGet(LodashFind(players, { 'value': playerId}), 'team', '')
 };
 
 const renderTeam = (teamId, teams) => {
   const team = LodashFind(teams, { 'id': teamId});
-  return `${String.fromCodePoint(LodashGet(team, 'emoji', ''))} ${LodashGet(team, 'fullName', teamId)}`
+  return `${String.fromCodePoint(LodashGet(team, 'emoji', ''))} ${LodashGet(team, 'nickname', teamId)}`
 };
 
 const addEventCols = (data, players, teams) => {
@@ -58,7 +62,9 @@ const addEventCols = (data, players, teams) => {
                 batter_team_name: row.batter_team_id ? renderTeam(row.batter_team_id, teams) : '',
                 pitcher_team_name: row.pitcher_team_id ? renderTeam(row.pitcher_team_id, teams) : '',
                 batter_name: row.batter_id ? renderPlayer(row.batter_id, players) : '',
-                pitcher_name: row.pitcher_id ? renderPlayer(row.pitcher_id, players) : ''
+                pitcher_name: row.pitcher_id ? renderPlayer(row.pitcher_id, players) : '',
+                batter_with_team: row.batter_id && row.batter_team_id ? renderPlayerWithTeam(row.batter_id, players, row.batter_team_id, teams) : '',
+                pitcher_with_team: row.pitcher_id && row.pitcher_team_id ? renderPlayerWithTeam(row.pitcher_id, players, row.pitcher_team_id, teams) : ''
             };
             return {...row, ...newValues};
         }),

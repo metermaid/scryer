@@ -81,7 +81,46 @@ const getColumnSearchProps = (dataIndex, searchInput, handleSearch, handleReset)
       record[dataIndex] ? record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()) : '',
     onFilterDropdownVisibleChange: visible => {
       if (visible) {
-        setTimeout(() => searchInput.select(), 100);
+        setTimeout(() => searchInput && searchInput.select(), 100);
+      }
+    }
+  });
+
+const getColumnGameAPISearchProps = (dataIndex, searchInput, handleSearch, handleReset) => ({
+    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
+      <div style={{ padding: 8 }}>
+        <Input
+          ref={node => {
+            searchInput = node;
+          }}
+          placeholder={`Search ${dataIndex}`}
+          value={selectedKeys[0]}
+          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
+          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
+          style={{ width: 188, marginBottom: 8, display: 'block' }}
+        />
+        <Space>
+          <Button
+            type="primary"
+            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            icon={<SearchOutlined />}
+            size="small"
+            style={{ width: 90 }}
+          >
+            Search
+          </Button>
+          <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
+            Reset
+          </Button>
+        </Space>
+      </div>
+    ),
+    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    onFilter: (value, record) =>
+      record[dataIndex] ? parseInt(record[dataIndex]) + 1 === parseInt(value) : false,
+    onFilterDropdownVisibleChange: visible => {
+      if (visible) {
+        setTimeout(() => searchInput && searchInput.select(), 100);
       }
     }
   });
@@ -91,17 +130,20 @@ const getColumnNumericalSortAndSearchProps = (field_name, searchInput, handleSea
   ...getColumnSearchProps(field_name, searchInput, handleSearch, handleReset)
 });
 
-export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSearch, handleReset) => {
-  return [
-    {
-      'dataIndex': 'id',
-      'title': 'ID',
-      ...getColumnNumericalSortAndSearchProps('id')
-    },
+export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSearch, handleReset, advancedMode) => {
+  const getColumnNumericalSortAndSearchPropsShim = (field_name) => {
+    return advancedMode ? getColumnNumericalSortAndSearchProps(field_name, searchInput, handleSearch, handleReset) : {}
+  };
+  const advancedModeColumnsHead = advancedMode ? [
     {
       'dataIndex': 'game_id',
       'title': 'Game ID',
       ...getColumnSearchProps('game_id', searchInput, handleSearch, handleReset)
+    },
+    {
+      'dataIndex': 'id',
+      'title': 'Event ID',
+      ...getColumnNumericalSortAndSearchPropsShim('id')
     },
     {
       'dataIndex': 'event_type',
@@ -110,14 +152,9 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
       'filters': gameEvents,
       'onFilter': (value, record) => value.localeCompare(record.event_type) === 0,
       ...getColumnAlphaSortProps('event_type')
-    },
-    {
-      'dataIndex': 'event_text',
-      'title': 'Event Text',
-      'render': (text, record, index) => renderArray(text),
-      'width': 200,
-      ...getColumnSearchProps('event_text', searchInput, handleSearch, handleReset)
-    },
+    }
+  ] : [];
+  const advancedModeColumnsTeamInfo = advancedMode ? [
     {
       'dataIndex': 'batter_name',
       'title': 'Batter Name',
@@ -126,7 +163,7 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
     },
     {
       'dataIndex': 'batter_team_name',
-      'title': 'Batter Team Name',
+      'title': 'Batter Team',
       ...getColumnTeamFilterProps(teams, 'batter_team_name'),
       ...getColumnAlphaSortProps('batter_team_name')
     },
@@ -138,45 +175,40 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
     },
     {
       'dataIndex': 'pitcher_team_name',
-      'title': 'Pitcher Team Name',
+      'title': 'Pitcher Team',
       ...getColumnTeamFilterProps(teams, 'pitcher_team_name'),
       ...getColumnAlphaSortProps('pitcher_team_name')
+    }
+  ] : [
+    {
+      'dataIndex': 'batter_with_team',
+      'title': 'Batter (Team)'
     },
     {
-      'dataIndex': 'inning',
-      'title': 'Inning',
-      ...getColumnNumericalSortAndSearchProps('inning')
-    },
+      'dataIndex': 'pitcher_with_team',
+      'title': 'Pitcher (Team)'
+    }
+  ];
+  const advancedModeColumnsScore = advancedMode ? [
     {
       'dataIndex': 'home_score',
       'title': 'Home Score',
-      ...getColumnNumericalSortAndSearchProps('home_score'),
+      ...getColumnNumericalSortAndSearchPropsShim('home_score'),
     },
     {
       'dataIndex': 'away_score',
       'title': 'Away Score',
-      ...getColumnNumericalSortAndSearchProps('away_score'),
-    },
+      ...getColumnNumericalSortAndSearchPropsShim('away_score'),
+    }
+  ] : [
     {
-      'dataIndex': 'home_strike_count',
-      'title': 'Home Strike Count',
-      ...getColumnNumericalSortAndSearchProps('home_strike_count'),
-    },
-    {
-      'dataIndex': 'away_strike_count',
-      'title': 'Away Strike Count',
-      ...getColumnNumericalSortAndSearchProps('away_strike_count'),
-    },
-    {
-      'dataIndex': 'outs_before_play',
-      'title': 'Outs before Play',
-      ...getColumnNumericalSortAndSearchProps('outs_before_play'),
-    },
-    {
-      'dataIndex': 'batter_count',
-      'title': 'Batter Count',
-      ...getColumnNumericalSortAndSearchProps('batter_count'),
-    },
+      'title': 'Score',
+      'render': (text, record, index) => {
+        return `${record.home_score} - ${record.away_score}`
+      }
+    }
+  ];
+  const advancedModeColumnsTail = advancedMode ? [
     {
       'dataIndex': 'pitches',
       'title': 'Pitches',
@@ -185,46 +217,84 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
       ...getColumnSearchProps('pitches', searchInput, handleSearch, handleReset)
     },
     {
-      'dataIndex': 'total_strikes',
-      'title': 'Total Strikes',
-      ...getColumnNumericalSortAndSearchProps('total_strikes'),
-    },
-    {
-      'dataIndex': 'total_balls',
-      'title': 'Total Balls',
-      ...getColumnNumericalSortAndSearchProps('total_balls'),
-    },
-    {
       'dataIndex': 'bases_hit',
       'title': 'Bases Hit',
-      ...getColumnNumericalSortAndSearchProps('bases_hit'),
+      ...getColumnNumericalSortAndSearchPropsShim('bases_hit'),
     },
     {
       'dataIndex': 'runs_batted_in',
       'title': 'Runs Batted In',
-      ...getColumnNumericalSortAndSearchProps('runs_batted_in'),
+      ...getColumnNumericalSortAndSearchPropsShim('runs_batted_in'),
     },
     {
       'dataIndex': 'outs_on_play',
       'title': 'Outs on Play',
-      ...getColumnNumericalSortAndSearchProps('outs_on_play'),
+      ...getColumnNumericalSortAndSearchPropsShim('outs_on_play'),
     },
     {
       'dataIndex': 'errors_on_play',
       'title': 'Errors on Play',
-      ...getColumnNumericalSortAndSearchProps('errors_on_play'),
+      ...getColumnNumericalSortAndSearchPropsShim('errors_on_play'),
       ...getColumnSearchProps('errors_on_play', searchInput, handleSearch, handleReset)
     },
     {
       'dataIndex': 'batter_base_after_play',
       'title': 'Batter Base After Play',
-      ...getColumnNumericalSortAndSearchProps('batter_base_after_play')
+      ...getColumnNumericalSortAndSearchPropsShim('batter_base_after_play')
+    }
+  ] : [];
+  return [
+    {
+      'dataIndex': 'id',
+      'render': (text, record, index) => '',
+      'sorter': (a, b) => LodashGet(a, 'id') - LodashGet(b, 'id')
+    },
+    {
+      'dataIndex': 'season',
+      'title': 'Season',
+      ...getColumnNumericalSortAndSearchPropsShim('season')
+    },
+    {
+      'dataIndex': 'day',
+      'title': 'Day',
+      ...getColumnNumericalSortAndSearchPropsShim('day')
+    },
+    ...advancedModeColumnsHead,
+    {
+      'dataIndex': 'inning',
+      'title': 'Inning',
+      ...getColumnNumericalSortAndSearchPropsShim('inning')
+    },
+    ...advancedModeColumnsScore,
+    {
+      'dataIndex': 'event_text',
+      'title': 'Event Text',
+      'render': (text, record, index) => renderArray(text),
+      'width': 200,
+      ...getColumnSearchProps('event_text', searchInput, handleSearch, handleReset)
+    },
+    ...advancedModeColumnsTeamInfo,
+    {
+      'dataIndex': 'outs_before_play',
+      'title': advancedMode ? 'Outs Before Play' : 'Outs',
+      ...getColumnNumericalSortAndSearchPropsShim('outs_before_play'),
+    },
+    {
+      'dataIndex': 'total_strikes',
+      'title': 'Strikes',
+      ...getColumnNumericalSortAndSearchPropsShim('total_strikes'),
+    },
+    {
+      'dataIndex': 'total_balls',
+      'title': 'Balls',
+      ...getColumnNumericalSortAndSearchPropsShim('total_balls'),
     },
     {
       'dataIndex': 'additional_context',
       'title': 'Additional Context',
       ...getColumnSearchProps('additional_context', searchInput, handleSearch, handleReset)
-    }
+    },
+    ...advancedModeColumnsTail
   ];
 };
 
@@ -275,12 +345,16 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'season',
         'title': 'season',
-        'render': (text, record, index) => text+1
+        'render': (text, record, index) => text+1,
+        ...getColumnNumericalSortProps('season'),
+        ...getColumnGameAPISearchProps('season', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'day',
         'title': 'day',
-        'render': (text, record, index) => text+1
+        'render': (text, record, index) => text+1,
+        ...getColumnNumericalSortProps('day'),
+        ...getColumnGameAPISearchProps('day', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'match',

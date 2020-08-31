@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alert, Button, Form, Input, Select, Table, Layout } from 'antd';
+import { Alert, Button, Form, Input, Select, Table, Layout, Checkbox } from 'antd';
 import { CSVLink } from 'react-csv';
 import Blaseball from './services/Blaseball';
 import sibr from './services/SIBR';
@@ -18,7 +18,7 @@ const tableLayout = {
 class Events extends React.Component {
     constructor (props) {
         super(props);
-        this.state = { results: null, batters: [], pitchers: [], teams: [], searchText: '', searchedColumn: '' };
+        this.state = { results: null, batters: [], pitchers: [], teams: [], searchText: '', searchedColumn: '', advancedMode: false };
         this.onFinish = this.onFinish.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleReset = this.handleReset.bind(this);
@@ -72,13 +72,17 @@ class Events extends React.Component {
         this.setState({ searchText: '' });
     }
 
+    toggleChecked = () => {
+        this.setState({ advancedMode: !this.state.advancedMode });
+    };
+
     render () {
         const search = this.props.location.search;
         const defaultGame = new URLSearchParams(search).get('gameId');
         const defaultPitcher = new URLSearchParams(search).get('pitcherId');
         const defaultBatter = new URLSearchParams(search).get('batterId');
 
-        const { error, results, batters, pitchers, teams, searchInput } = this.state;
+        const { error, results, batters, pitchers, teams, searchInput, advancedMode } = this.state;
         const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
         const errorMessage = error ? <Alert closable message={error} type='error' /> : '';
 
@@ -102,9 +106,12 @@ class Events extends React.Component {
                     </Form.Item>
                 </Form>
                 <div className='results-list'>
-                    {csvLink}
+                    <div>
+                        <span>{csvLink}</span>
+                        <span><Checkbox onChange={this.toggleChecked}>Show Advanced Mode?</Checkbox></span>
+                    </div>
                     <Table dataSource={results} 
-                        columns={gameEventColumns(batters, pitchers, teams, searchInput, this.handleSearch, this.handleReset)}
+                        columns={gameEventColumns(batters, pitchers, teams, searchInput, this.handleSearch, this.handleReset, advancedMode)}
                         {...tableLayout} />
                 </div>
             </Layout.Content>
