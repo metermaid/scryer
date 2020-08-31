@@ -227,9 +227,14 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
       ...getColumnNumericalSortAndSearchPropsShim('runs_batted_in'),
     },
     {
-      'dataIndex': 'outs_on_play',
-      'title': 'Outs on Play',
-      ...getColumnNumericalSortAndSearchPropsShim('outs_on_play'),
+      'dataIndex': 'total_strikes',
+      'title': 'Strikes',
+      ...getColumnNumericalSortAndSearchPropsShim('total_strikes'),
+    },
+    {
+      'dataIndex': 'total_balls',
+      'title': 'Balls',
+      ...getColumnNumericalSortAndSearchPropsShim('total_balls'),
     },
     {
       'dataIndex': 'errors_on_play',
@@ -275,19 +280,9 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
     },
     ...advancedModeColumnsTeamInfo,
     {
-      'dataIndex': 'outs_before_play',
-      'title': advancedMode ? 'Outs Before Play' : 'Outs',
-      ...getColumnNumericalSortAndSearchPropsShim('outs_before_play'),
-    },
-    {
-      'dataIndex': 'total_strikes',
-      'title': 'Strikes',
-      ...getColumnNumericalSortAndSearchPropsShim('total_strikes'),
-    },
-    {
-      'dataIndex': 'total_balls',
-      'title': 'Balls',
-      ...getColumnNumericalSortAndSearchPropsShim('total_balls'),
+      'dataIndex': 'outs_on_play',
+      'title': 'Outs',
+      ...getColumnNumericalSortAndSearchPropsShim('outs_on_play'),
     },
     {
       'dataIndex': 'additional_context',
