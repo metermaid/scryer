@@ -2,13 +2,20 @@ import axios from 'axios';
 import LodashGet from 'lodash/get';
 import LodashFlatten from 'lodash/flatten';
 import LodashSortBy from 'lodash/sortBy';
-import LodashUniq from 'lodash/uniq';
+import LodashUniqBy from 'lodash/uniqBy';
+import AllTeams from './../backups/allTeams';
+import BackupBatters from './../backups/BackupBatters';
+import BackupPitchers from './../backups/BackupPitchers';
 
-import { bonusPlayers, backupPlayers } from './Players';
 import { checkCache, cachePromise, cacheService } from './CachingManager';
 
+const backups = {
+    'lineup': BackupBatters,
+    'rotation': BackupPitchers
+}
+
 export const getPlayers = (type) => {
-    return getPlayersFromBlaseball(type).then(data => LodashSortBy(LodashFlatten(data), ['name'])).catch((error) => getBackupPlayers(type));
+    return getPlayersFromBlaseball(type).then(data => cacheService(type + 'Players', LodashSortBy(LodashFlatten(data), ['name'])));
 };
 
 export const getGames = (season, day) => {
@@ -32,7 +39,11 @@ export const getTeams = () => {
     if (cache) { return cache; }
 
     const results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/allTeams`)
-        .then(response => cacheService(dataKey, response && response.data));
+        .then(response => cacheService(dataKey, response && response.data))
+        .catch((error) => {
+            console.log(error);
+            return AllTeams;
+        });
 
     return cachePromise(dataKey, results);
 };
@@ -45,7 +56,7 @@ export const getPlayersFromBlaseball = (type) => {
 };
 
 const processTeam = (team, type) => {
-    const dataKey = `${team.nickname}${type}Members`;
+    const dataKey = `${team.nickname}-${type}`;
     const cache = checkCache(dataKey);
 
     /* istanbul ignore next line */
@@ -54,8 +65,12 @@ const processTeam = (team, type) => {
     const results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/players`, { params: { ids: ids }})
         .then(response => 
             cacheService(dataKey, 
-                response && response.data && LodashUniq(response.data.map(player => getPlayerObject(player, team)).concat(getBonusPlayers(team, type)))
-            ));
+                response && response.data && LodashUniqBy(response.data.map(player => getPlayerObject(player, team, type)).concat(getBonusPlayers(backups[type], team, type)), 'id')
+            ))
+        .catch((error) => {
+            console.log(error);
+            return getBonusPlayers(backups[type], team, type);
+        });
 
     return cachePromise(dataKey, results);
 };
@@ -67,28 +82,19 @@ export const parseGameObject = (game) => {
     };
 };
 
-export const getPlayerObject = (player, team) => {
+export const getPlayerObject = (player, team, type) => {
     return {
-        value: player.id,
-        name: player.name,
-        searchkey: `${player.name} ${player.id} ${team.nickname}`,
+        ...player,
         label: `${player.name} (${String.fromCodePoint(team.emoji)} ${team.nickname})`,
+        position: type,
+        value: player.id,
+        searchkey: `${player.name} ${player.id} ${team.nickname}`,
         team: team.fullName
     };
 };
 
-const getBackupPlayers = (type) => {
-    return backupPlayers.filter(player => !player.position.localeCompare(type)).map(player => ({
-        value: player.id,
-        name: player.name,
-        searchkey: `${player.name} ${player.id}`,
-        label: `${player.name}`,
-        team: player.team
-    }));
-};
-
-const getBonusPlayers = (team, type) => {
-    return bonusPlayers.filter(player => !player.team.localeCompare(team.fullName) && !player.position.localeCompare(type))
+const getBonusPlayers = (playerList, team, type) => {
+    return playerList.filter(player => !player.team.localeCompare(team.fullName) && !player.position.localeCompare(type))
         .map(player => getPlayerObject(player, team));
 };
 
