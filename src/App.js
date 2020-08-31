@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter, Route, Switch } from 'react-router-dom';
+import { HashRouter, Route, Switch } from 'react-router-dom';
 import { Layout } from 'antd';
 import About from './About';
 import Menu from './Menu';
@@ -11,7 +11,7 @@ import Games from './Games';
 class App extends React.Component {
     render() {
         return (
-            <BrowserRouter basename='/'>
+            <HashRouter basename='/'>
                 <div className='App'>
                     <Layout>
                         <Layout.Header>
@@ -27,7 +27,7 @@ class App extends React.Component {
                         </Switch>
                     </Layout>
                 </div>
-            </BrowserRouter>
+            </HashRouter>
         );
     }
 }
