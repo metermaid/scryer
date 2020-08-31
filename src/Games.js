@@ -2,6 +2,7 @@ import React from 'react';
 import { Alert, Button, Form, InputNumber, Layout, Table } from 'antd';
 import { CSVLink } from 'react-csv';
 import LodashUniqWith from 'lodash/uniqWith';
+import LodashFind from 'lodash/find';
 import LodashIsEq from 'lodash/isEqual';
 import { gameAPIColumns } from './config/ColumnsConfig';
 
@@ -42,7 +43,7 @@ class Games extends React.Component {
         return Blaseball.getGames(season, day)
             .then(results => {
                 this.setState({results: LodashUniqWith(results.concat(this.state.results), LodashIsEq), error: null });
-                return results.length;
+                return results;
             })
             .catch(/* istanbul ignore next */ error => console.log(error));
     }
@@ -57,7 +58,10 @@ class Games extends React.Component {
             const days = Array.from(Array(150).keys());
             days.reduce(async (previousPromise, nextDay) => {
                 const results = await previousPromise;
-                if (results) {
+
+                const realResults = !results.length || LodashFind(results, (result) => parseFloat(result.homeOdds) !== 0 && parseFloat(result.awayOdds) !== 0);
+
+                if (results && realResults) {
                     return this.getGame(parseInt(values.season) - 1, nextDay);
                 } else {
                     return Promise.resolve(false);
