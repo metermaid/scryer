@@ -126,7 +126,12 @@ const getColumnZeroIndexedSearchProps = (dataIndex, searchInput, handleSearch, h
   });
 
 const getColumnNumericalSortAndSearchProps = (field_name, searchInput, handleSearch, handleReset) => ({
-  sorter: (a, b) => LodashGet(a, field_name) - LodashGet(b, field_name),
+  ...getColumnNumericalSortProps(field_name),
+  ...getColumnSearchProps(field_name, searchInput, handleSearch, handleReset)
+});
+
+const getColumnAlphaSortAndSearchProps = (field_name, searchInput, handleSearch, handleReset) => ({
+  ...getColumnNumericalSortProps(field_name),
   ...getColumnSearchProps(field_name, searchInput, handleSearch, handleReset)
 });
 
@@ -333,6 +338,12 @@ export const playerStatColumns = (batters, teams, searchInput, handleSearch, han
 };
 
 export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSearch, handleReset) => {
+    const getColumnNumericalSortAndSearchPropsShim = (field_name) => {
+      return getColumnNumericalSortAndSearchProps(field_name, searchInput, handleSearch, handleReset)
+    };
+    const getColumnAlphaSortAndSearchPropsShim = (field_name) => {
+      return getColumnAlphaSortAndSearchProps(field_name, searchInput, handleSearch, handleReset)
+    };
     return [
       {
         'dataIndex': 'id',
@@ -364,59 +375,64 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'homeScore',
         'title': 'homeScore',
-        ...getColumnNumericalSortAndSearchProps('homeScore')
+        ...getColumnNumericalSortAndSearchPropsShim('homeScore')
       },
       {
         'dataIndex': 'awayScore',
         'title': 'awayScore',
-        ...getColumnNumericalSortAndSearchProps('awayScore')
+        ...getColumnNumericalSortAndSearchPropsShim('awayScore')
       },
       {
         'dataIndex': 'homeOdds',
         'title': 'homeOdds',
-        ...getColumnNumericalSortAndSearchProps('homeOdds')
+        ...getColumnNumericalSortAndSearchPropsShim('homeOdds')
       },
       {
         'dataIndex': 'awayOdds',
         'title': 'awayOdds',
-        ...getColumnNumericalSortAndSearchProps('awayOdds')
+        ...getColumnNumericalSortAndSearchPropsShim('awayOdds')
       },
       {
         'dataIndex': 'homePitcher',
         'title': 'homePitcher',
         'render': (text, record, index) => renderPlayer(text, pitchers),
         ...getColumnPlayerFilterProps(pitchers, 'homePitcher'),
-        ...getColumnAlphaSortProps('homePitcher')
+        ...getColumnAlphaSortAndSearchPropsShim('homePitcher')
       },
       {
         'dataIndex': 'awayPitcher',
         'title': 'awayPitcher',
         'render': (text, record, index) => renderPlayer(text, pitchers),
         ...getColumnPlayerFilterProps(pitchers, 'awayPitcher'),
-        ...getColumnAlphaSortProps('awayPitcher')
+        ...getColumnAlphaSortAndSearchPropsShim('awayPitcher')
       },
       {
         'dataIndex': 'homeStrikes',
         'title': 'homeStrikes',
-        ...getColumnNumericalSortAndSearchProps('homeStrikes')
+        ...getColumnNumericalSortAndSearchPropsShim('homeStrikes')
       },
       {
         'dataIndex': 'awayStrikes',
         'title': 'awayStrikes',
-        ...getColumnNumericalSortAndSearchProps('awayStrikes')
+        ...getColumnNumericalSortAndSearchPropsShim('awayStrikes')
       },
       {
         'dataIndex': 'inning',
         'title': 'inning',
-        ...getColumnNumericalSortAndSearchProps('inning')
+        ...getColumnNumericalSortAndSearchPropsShim('inning')
       },
       {
         'dataIndex': 'outcomes',
-        'title': 'outcomes'
+        'title': 'outcomes',
+        ...getColumnAlphaSortAndSearchPropsShim('outcomes')
       },
       {
         'dataIndex': 'shame',
-        'title': 'shame'
+        'title': 'shame',
+        'render': (text, record, index) => text ? "TRUE" : "FALSE",
+        ...getColumnAlphaSortProps('shame'),
+        filters: [{value: true, text: "TRUE"}, {value: false, text: "FALSE" }],
+        onFilter: (value, record) => LodashGet(record, 'shame') === value
       },
       {
         'dataIndex': 'weather',
