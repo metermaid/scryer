@@ -95,7 +95,7 @@ export const getPlayerObject = (player, team, type) => {
 };
 
 const cleanList = (playerList) => {
-    return playerList.map(player => LodashPick(player, ['value', 'searchkey', 'label']));
+    return playerList.map(player => LodashPick(player, ['value', 'searchkey', 'label', 'name']));
 };
 
 const getBonusPlayers = (playerList, team, type) => {
