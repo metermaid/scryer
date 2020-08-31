@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { weatherTypes, gameEvents } from './EventsConfig';
 import { Button, Input, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
@@ -227,7 +228,7 @@ export const gameEventColumns = (batters, pitchers, teams, searchInput, handleSe
   ];
 };
 
-export const batterStatColumns = (batters, teams, searchInput, handleSearch, handleReset) => {
+export const playerStatColumns = (batters, teams, searchInput, handleSearch, handleReset) => {
     return [
       {
         'dataIndex': 'api',
@@ -236,57 +237,22 @@ export const batterStatColumns = (batters, teams, searchInput, handleSearch, han
         ...getColumnSearchProps('api', searchInput, handleSearch, handleReset)
       },
       {
-        'dataIndex': 'batter_id',
-        'title': 'Batter ID',
-        ...getColumnAlphaSortProps('batter_id'),
-        ...getColumnSearchProps('batter_id', searchInput, handleSearch, handleReset)
+        'dataIndex': 'id',
+        'title': 'Player ID',
+        ...getColumnAlphaSortProps('id'),
+        ...getColumnSearchProps('id', searchInput, handleSearch, handleReset)
       },
       {
-        'dataIndex': 'batter_name',
-        'title': 'Batter Name',
-        ...getColumnAlphaSortProps('batter_name'),
-        ...getColumnPlayerFilterProps(batters, 'batter_name')
+        'dataIndex': 'name',
+        'title': 'Player Name',
+        ...getColumnAlphaSortProps('name'),
+        ...getColumnPlayerFilterProps(batters, 'name')
       },
       {
-        'dataIndex': 'batter_team_name',
-        'title': 'Batter Team Name',
-        ...getColumnAlphaSortProps('batter_team_name'),
-        ...getColumnTeamFilterProps(teams, 'batter_team_name')
-      },
-      {
-        'dataIndex': 'count',
-        'title': 'Count',
-        ...getColumnNumericalSortProps('count'),
-        ...getColumnSearchProps('count', searchInput, handleSearch, handleReset)
-      }
-    ];
-};
-
-export const pitcherStatColumns = (pitchers, teams, searchInput, handleSearch, handleReset) => {
-    return [
-      {
-        'dataIndex': 'api',
-        'title': 'API',
-        ...getColumnAlphaSortProps('api'),
-        ...getColumnSearchProps('api', searchInput, handleSearch, handleReset)
-      },
-      {
-        'dataIndex': 'pitcher_id',
-        'title': 'Pitcher ID',
-        ...getColumnAlphaSortProps('pitcher_id'),
-        ...getColumnSearchProps('pitcher_id', searchInput, handleSearch, handleReset)
-      },
-      {
-        'dataIndex': 'pitcher_name',
-        'title': 'Pitcher Name',
-        ...getColumnAlphaSortProps('pitcher_name'),
-        ...getColumnPlayerFilterProps(pitchers, 'pitcher_name')
-      },
-      {
-        'dataIndex': 'pitcher_team_name',
-        'title': 'Pitcher Team Name',
-        ...getColumnAlphaSortProps('pitcher_team_name'),
-        ...getColumnTeamFilterProps(teams, 'pitcher_team_name')
+        'dataIndex': 'team_name',
+        'title': 'Team Name',
+        ...getColumnAlphaSortProps('team_name'),
+        ...getColumnTeamFilterProps(teams, 'team_name')
       },
       {
         'dataIndex': 'count',
@@ -301,7 +267,10 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
     return [
       {
         'dataIndex': 'id',
-        'title': 'id'
+        'title': 'id',
+        'render': (text, record, index) => (
+          <Link to={{'pathname': '/', 'search': `?gameId=${text}`}}>{ text }</Link>
+        )
       },
       {
         'dataIndex': 'season',
@@ -387,6 +356,5 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
 export default {
     gameAPIColumns,
     gameEventColumns,
-    batterStatColumns,
-    pitcherStatColumns
+    playerStatColumns
 };

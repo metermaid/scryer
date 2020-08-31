@@ -33,10 +33,10 @@ class Events extends React.Component {
             data && this.setState({ teams: data});
         }).catch(/* istanbul ignore next */ error => Promise.reject(error));
         Blaseball.getPlayers('lineup').then(/* istanbul ignore next */ data => {
-            data && this.setState({ batters: data});
+            data && this.setState({ batters: Blaseball.cleanList(data)});
         }).catch(/* istanbul ignore next */ error => Promise.reject(error));
         Blaseball.getPlayers('rotation').then(/* istanbul ignore next */ data => {
-            data && this.setState({ pitchers: data});
+            data && this.setState({ pitchers: Blaseball.cleanList(data)});
         }).catch(/* istanbul ignore next */ error => Promise.reject(error));
     }
 
@@ -45,6 +45,12 @@ class Events extends React.Component {
         const players = [...batters, ...pitchers];
 
         if (values.gameId || values.pitcherId || values.batterId) {
+            const gameIdPath = values.gameId ? `gameId=${values.gameId}` : '';
+            const batterIdPath = values.batterId ? `batterId=${values.batterId}` : '';
+            const pitcherIdPath = values.pitcherId ? `pitcherId=${values.pitcherId}` : '';
+            const pathname = `?${[gameIdPath, batterIdPath, pitcherIdPath].filter(Boolean).join('&')}`;
+            this.props.history.push({ search: pathname });
+
             return sibr.getEvents(values, players, teams)
                 .then(results => {
                     console.log(results);
@@ -67,20 +73,26 @@ class Events extends React.Component {
     }
 
     render () {
-      const { error, results, batters, pitchers, teams, searchInput } = this.state;
-      const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
-      const errorMessage = error ? <Alert closable message={error} type='error' /> : '';
-      return (
+        const search = this.props.location.search;
+        const defaultGame = new URLSearchParams(search).get('gameId');
+        const defaultPitcher = new URLSearchParams(search).get('pitcherId');
+        const defaultBatter = new URLSearchParams(search).get('batterId');
+
+        const { error, results, batters, pitchers, teams, searchInput } = this.state;
+        const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
+        const errorMessage = error ? <Alert closable message={error} type='error' /> : '';
+
+        return (
             <Layout.Content>
                 { errorMessage }
                 <Form onFinish={this.onFinish} {...formLayout} style={{ padding: '10px 0' }}>
-                    <Form.Item name='gameId' label='Game'>
+                    <Form.Item name='gameId' label='Game' initialValue={defaultGame}>
                         <Input placeholder='dc767612-eb77-417b-8d2f-c21eb4dab868' />
                     </Form.Item>
-                    <Form.Item name='pitcherId' label='Pitcher'>
+                    <Form.Item name='pitcherId' label='Pitcher' initialValue={defaultPitcher}>
                         <Select placeholder='Pitcher' options={pitchers} showSearch allowClear optionFilterProp='searchkey' />
                     </Form.Item>
-                    <Form.Item name='batterId' label='Batter'>
+                    <Form.Item name='batterId' label='Batter' initialValue={defaultBatter}>
                         <Select placeholder='Batter' options={batters} showSearch allowClear optionFilterProp='searchkey' />
                     </Form.Item>
                     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -96,7 +108,7 @@ class Events extends React.Component {
                         {...tableLayout} />
                 </div>
             </Layout.Content>
-      );
+        );
     }
 }
 

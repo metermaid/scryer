@@ -7,7 +7,7 @@ import LodashIsEq from 'lodash/isEqual';
 import Blaseball from './services/Blaseball';
 import sibr from './services/SIBR';
 import { batterAPIs } from './config/APIConfig';
-import { batterStatColumns } from './config/ColumnsConfig';
+import { playerStatColumns } from './config/ColumnsConfig';
 
 const formLayout = {
     labelCol: { span: 8 },
@@ -40,6 +40,8 @@ class BatterStats extends React.Component {
         const { batters, teams } = this.state;
 
         if (values.api) {
+            const pathname = `?api=${values.api}&id=${values.batterId}`;
+            this.props.history.push({ search: pathname });
             return sibr.getPlayerAPI(values, batters, teams)
                 .then(results => {
                     console.log(results);
@@ -65,18 +67,21 @@ class BatterStats extends React.Component {
     }
 
     render () {
-      const { error, batters, teams, results, searchInput } = this.state;
-      const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
-      const errorMessage = error ? <Alert closable message={error} type='error' /> : '';
+        const search = this.props.location.search;
+        const defaultAPI = new URLSearchParams(search).get('api');
+        const defaultID = new URLSearchParams(search).get('id');
+        const { error, batters, teams, results, searchInput } = this.state;
+        const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
+        const errorMessage = error ? <Alert closable message={error} type='error' /> : '';
 
-      return (
+        return (
             <Layout.Content>
                 { errorMessage }
                 <Form onFinish={this.onFinish} {...formLayout} style={{ padding: '10px 0' }}>
-                    <Form.Item name='api' label='API'>
+                    <Form.Item name='api' label='API' initialValue={defaultAPI}>
                         <Select placeholder='API' required options={batterAPIs} showSearch allowClear />
                     </Form.Item>
-                    <Form.Item name='batterId' label='Batter'>
+                    <Form.Item name='batterId' label='Batter' initialValue={defaultID}>
                         <Select placeholder='Batter' options={batters} showSearch allowClear optionFilterProp='searchKey' />
                     </Form.Item>
                     <Form.Item wrapperCol={{ offset: 8, span: 16 }}>
@@ -90,11 +95,11 @@ class BatterStats extends React.Component {
                     <Table dataSource={results}
                         bordered
                         scroll={{ x: 'max-content' }}
-                        columns={batterStatColumns(batters, teams, searchInput, this.handleSearch, this.handleReset)}
+                        columns={playerStatColumns(batters, teams, searchInput, this.handleSearch, this.handleReset)}
                         />
                 </div>
             </Layout.Content>
-      );
+        );
     }
 }
 

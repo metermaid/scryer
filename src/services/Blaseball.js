@@ -1,6 +1,7 @@
 import axios from 'axios';
 import LodashGet from 'lodash/get';
 import LodashFlatten from 'lodash/flatten';
+import LodashPick from 'lodash/pick';
 import LodashSortBy from 'lodash/sortBy';
 import LodashUniqBy from 'lodash/uniqBy';
 import AllTeams from './../backups/allTeams';
@@ -93,12 +94,17 @@ export const getPlayerObject = (player, team, type) => {
     };
 };
 
+const cleanList = (playerList) => {
+    return playerList.map(player => LodashPick(player, ['value', 'searchkey', 'label']));
+};
+
 const getBonusPlayers = (playerList, team, type) => {
     return playerList.filter(player => !player.team.localeCompare(team.fullName) && !player.position.localeCompare(type))
         .map(player => getPlayerObject(player, team));
 };
 
 export default {
+    cleanList,
     getPlayers,
     getTeams,
     getGames

@@ -70,12 +70,13 @@ const addPlayerCols = (data, players, teams) => {
     const { results, ...remainder } = data;
     return {
         results: results.map((row, index) => {
+            const id = row.batter_id || row.pitcher_id || row.id || '';
             const newValues = {
-                key: `${row.batter_id}-${index}`,
-                batter_team_name: row.batter_id ? renderPlayerTeam(row.batter_id, players) : '',
-                pitcher_team_name: row.pitcher_id ? renderPlayerTeam(row.pitcher_id, players) : '',
-                batter_name: row.batter_id ? renderPlayer(row.batter_id, players) : '',
-                pitcher_name: row.pitcher_id ? renderPlayer(row.pitcher_id, players) : ''
+                key: `${id}-${index}`,
+                id: id,
+                team_name: id ? renderPlayerTeam(id, players) : '',
+                name: id ? renderPlayer(id, players) : '',
+                count: row.count || row.value || ''
             };
             return {...row, ...newValues};
         }),
