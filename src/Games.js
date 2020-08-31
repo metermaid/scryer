@@ -59,12 +59,12 @@ class Games extends React.Component {
             days.reduce(async (previousPromise, nextDay) => {
                 const results = await previousPromise;
 
-                const realResults = !results.length || LodashFind(results, (result) => parseFloat(result.homeOdds) !== 0 && parseFloat(result.awayOdds) !== 0);
+                const validResults = results && results.length && LodashFind(results, (result) => result.gameStart);
 
-                if (results && realResults) {
+                if (typeof results === "boolean" || validResults) {
                     return this.getGame(parseInt(values.season) - 1, nextDay);
                 } else {
-                    return Promise.resolve(false);
+                    return Promise.resolve([]);
                 }
             }, Promise.resolve(true));
         }

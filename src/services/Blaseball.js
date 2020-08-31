@@ -26,7 +26,7 @@ export const getGames = (season, day) => {
     /* istanbul ignore next line */
     if (cache) { return cache; }
 
-    const results = axios.get(`https://cors-proxy.blaseball-reference.com/database/games`, { params: { season, day }})
+    const results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/games`, { params: { season, day }})
         .then(response => cacheService(dataKey, response && response.data.map(game => parseGameObject(game))));
 
     return cachePromise(dataKey, results);
