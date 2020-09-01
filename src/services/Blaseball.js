@@ -1,5 +1,6 @@
 import axios from 'axios';
 import LodashGet from 'lodash/get';
+import LodashFind from 'lodash/find';
 import LodashFlatten from 'lodash/flatten';
 import LodashPick from 'lodash/pick';
 import LodashSortBy from 'lodash/sortBy';
@@ -7,7 +8,7 @@ import LodashUniqBy from 'lodash/uniqBy';
 import AllTeams from './../backups/allTeams';
 import BackupBatters from './../backups/BackupBatters';
 import BackupPitchers from './../backups/BackupPitchers';
-
+import { weatherTypes } from './../config/EventsConfig';
 import { checkCache, cachePromise, cacheService } from './CachingManager';
 
 const backups = {
@@ -22,12 +23,17 @@ export const getPlayers = (type) => {
 export const getGames = (season, day) => {
     const dataKey = 'games' + season + day;
     const cache = checkCache(dataKey);
+    let results;
 
     /* istanbul ignore next line */
     if (cache) { return cache; }
-
-    const results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/games`, { params: { season, day }})
-        .then(response => cacheService(dataKey, response && response.data.map(game => parseGameObject(game))));
+    if (season > 3) {
+        results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/games`, { params: { season, day }})
+            .then(response => cacheService(dataKey, response && response.data.map(game => parseGameObject(game))));
+    } else {
+        results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/games`, { params: { season, day }})
+            .then(response => cacheService(dataKey, response && response.data.map(game => parseGameObject(game))));
+    }
 
     return cachePromise(dataKey, results);
 };
@@ -79,6 +85,7 @@ const processTeam = (team, type) => {
 export const parseGameObject = (game) => {
     return {
         ...game,
+        weatherName: LodashGet(LodashFind(weatherTypes, { 'value': game.weather}), 'text'),
         match: `${String.fromCodePoint(game.homeTeamEmoji)} ${game.homeTeamNickname} - ${String.fromCodePoint(game.awayTeamEmoji)} ${game.awayTeamNickname}`
     };
 };

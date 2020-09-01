@@ -11,7 +11,6 @@ export const renderEvents = (eventId) => {
   return LodashGet(LodashFind(gameEvents, { 'value': eventId}), 'text', eventId);
 };
 
-
 export const renderWeather = (weatherId) => {
   return LodashGet(LodashFind(weatherTypes, { 'value': weatherId}), 'text', weatherId);
 };
@@ -33,13 +32,17 @@ const getColumnAlphaSortProps = (field_name) => ({
   sorter: (a, b) => LodashGet(a, field_name, '').localeCompare(LodashGet(b, field_name, ''))
 });
 
+const getColumnArraySortProps = (field_name) => ({
+  sorter: (a, b) => LodashGet(a, field_name, []).join().localeCompare(LodashGet(b, field_name, '').join())
+});
+
 const getColumnNumericalSortProps = (field_name) => ({
-  sorter: (a, b) => LodashGet(a, field_name) - LodashGet(b, field_name),
+  sorter: (a, b) => LodashGet(a, field_name) - LodashGet(b, field_name)
 });
 
 const getColumnPlayerFilterProps = (players, field_name) => ({
   filters: players.map(row => { return { value: row.name, text: row.name } }),
-  onFilter: (value, record) => value.localeCompare(LodashGet(record, field_name)) === 0
+  onFilter: (value, record) => LodashGet(record, field_name).includes(value)
 });
 
 const getColumnTeamFilterProps = (teams, field_name) => ({
@@ -87,50 +90,12 @@ const getColumnSearchProps = (dataIndex, searchInput, handleSearch, handleReset)
   });
 
 const getColumnZeroIndexedSearchProps = (dataIndex, searchInput, handleSearch, handleReset) => ({
-    filterDropdown: ({ setSelectedKeys, selectedKeys, confirm, clearFilters }) => (
-      <div style={{ padding: 8 }}>
-        <Input
-          ref={node => {
-            searchInput = node;
-          }}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={e => setSelectedKeys(e.target.value ? [e.target.value] : [])}
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{ width: 188, marginBottom: 8, display: 'block' }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{ width: 90 }}
-          >
-            Search
-          </Button>
-          <Button onClick={() => handleReset(clearFilters)} size="small" style={{ width: 90 }}>
-            Reset
-          </Button>
-        </Space>
-      </div>
-    ),
-    filterIcon: filtered => <SearchOutlined style={{ color: filtered ? '#1890ff' : undefined }} />,
+    ...getColumnSearchProps(dataIndex, searchInput, handleSearch, handleReset),
     onFilter: (value, record) =>
-      record[dataIndex] ? parseInt(record[dataIndex]) + 1 === parseInt(value) : false,
-    onFilterDropdownVisibleChange: visible => {
-      if (visible) {
-        setTimeout(() => searchInput && searchInput.select(), 100);
-      }
-    }
+      record[dataIndex] ? parseInt(record[dataIndex]) + 1 === parseInt(value) : false
   });
 
 const getColumnNumericalSortAndSearchProps = (field_name, searchInput, handleSearch, handleReset) => ({
-  ...getColumnNumericalSortProps(field_name),
-  ...getColumnSearchProps(field_name, searchInput, handleSearch, handleReset)
-});
-
-const getColumnAlphaSortAndSearchProps = (field_name, searchInput, handleSearch, handleReset) => ({
   ...getColumnNumericalSortProps(field_name),
   ...getColumnSearchProps(field_name, searchInput, handleSearch, handleReset)
 });
@@ -338,106 +303,99 @@ export const playerStatColumns = (batters, teams, searchInput, handleSearch, han
 };
 
 export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSearch, handleReset) => {
+    const getColumnSearchPropsShim = (field_name) => {
+      return getColumnSearchProps(field_name, searchInput, handleSearch, handleReset)
+    };
     const getColumnNumericalSortAndSearchPropsShim = (field_name) => {
       return getColumnNumericalSortAndSearchProps(field_name, searchInput, handleSearch, handleReset)
-    };
-    const getColumnAlphaSortAndSearchPropsShim = (field_name) => {
-      return getColumnAlphaSortAndSearchProps(field_name, searchInput, handleSearch, handleReset)
     };
     return [
       {
         'dataIndex': 'id',
-        'title': 'id',
+        'title': 'Game ID',
         'render': (text, record, index) => (
           <Link to={{'pathname': '/', 'search': `?gameId=${text}`}}>{ text }</Link>
         )
       },
       {
         'dataIndex': 'season',
-        'title': 'season',
+        'title': 'Season',
         'render': (text, record, index) => text+1,
         ...getColumnNumericalSortProps('season'),
         ...getColumnZeroIndexedSearchProps('season', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'day',
-        'title': 'day',
+        'title': 'Day',
         'render': (text, record, index) => text+1,
         ...getColumnNumericalSortProps('day'),
         ...getColumnZeroIndexedSearchProps('day', searchInput, handleSearch, handleReset)
       },
       {
         'dataIndex': 'match',
-        'title': 'match',
+        'title': 'Match',
         ...getColumnTeamFilterProps(teams, 'match'),
-        ...getColumnSearchProps('match', searchInput, handleSearch, handleReset)
+        ...getColumnAlphaSortProps('match')
       },
       {
         'dataIndex': 'homeScore',
-        'title': 'homeScore',
+        'title': 'Home Score',
         ...getColumnNumericalSortAndSearchPropsShim('homeScore')
       },
       {
         'dataIndex': 'awayScore',
-        'title': 'awayScore',
+        'title': 'Away Score',
         ...getColumnNumericalSortAndSearchPropsShim('awayScore')
       },
       {
         'dataIndex': 'homeOdds',
-        'title': 'homeOdds',
+        'title': 'Home Odds',
         ...getColumnNumericalSortAndSearchPropsShim('homeOdds')
       },
       {
         'dataIndex': 'awayOdds',
-        'title': 'awayOdds',
+        'title': 'Away Odds',
         ...getColumnNumericalSortAndSearchPropsShim('awayOdds')
       },
       {
         'dataIndex': 'homePitcher',
-        'title': 'homePitcher',
+        'title': 'Home Pitcher',
         'render': (text, record, index) => renderPlayer(text, pitchers),
-        ...getColumnPlayerFilterProps(pitchers, 'homePitcher'),
-        ...getColumnAlphaSortAndSearchPropsShim('homePitcher')
+        ...getColumnPlayerFilterProps(pitchers, 'homePitcherName'),
+        ...getColumnAlphaSortProps('homePitcherName')
       },
       {
         'dataIndex': 'awayPitcher',
-        'title': 'awayPitcher',
+        'title': 'Away Pitcher',
         'render': (text, record, index) => renderPlayer(text, pitchers),
-        ...getColumnPlayerFilterProps(pitchers, 'awayPitcher'),
-        ...getColumnAlphaSortAndSearchPropsShim('awayPitcher')
-      },
-      {
-        'dataIndex': 'homeStrikes',
-        'title': 'homeStrikes',
-        ...getColumnNumericalSortAndSearchPropsShim('homeStrikes')
-      },
-      {
-        'dataIndex': 'awayStrikes',
-        'title': 'awayStrikes',
-        ...getColumnNumericalSortAndSearchPropsShim('awayStrikes')
+        ...getColumnPlayerFilterProps(pitchers, 'awayPitcherName'),
+        ...getColumnAlphaSortProps('awayPitcherName')
       },
       {
         'dataIndex': 'inning',
-        'title': 'inning',
+        'title': 'Inning',
         ...getColumnNumericalSortAndSearchPropsShim('inning')
       },
       {
         'dataIndex': 'outcomes',
-        'title': 'outcomes',
-        ...getColumnAlphaSortAndSearchPropsShim('outcomes')
+        'title': 'Outcomes',
+        ...getColumnArraySortProps('outcomes'),
+        ...getColumnSearchPropsShim('outcomes')
       },
       {
         'dataIndex': 'shame',
-        'title': 'shame',
+        'title': 'Shame',
         'render': (text, record, index) => text ? "TRUE" : "FALSE",
-        ...getColumnAlphaSortProps('shame'),
+        ...getColumnNumericalSortProps('shame'),
         filters: [{value: true, text: "TRUE"}, {value: false, text: "FALSE" }],
         onFilter: (value, record) => LodashGet(record, 'shame') === value
       },
       {
-        'dataIndex': 'weather',
-        'title': 'weather',
-        'render': (text, record, index) => renderWeather(text)
+        'dataIndex': 'weatherName',
+        'title': 'Weather',
+        ...getColumnAlphaSortProps('weatherName'),
+        filters: weatherTypes,
+        onFilter: (value, record) => LodashGet(record, 'weather') === value
       }
     ];
 };

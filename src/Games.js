@@ -83,7 +83,7 @@ class Games extends React.Component {
     render () {
         const search = this.props.location.search;
         const defaultSeason = new URLSearchParams(search).get('season') || 5;
-        const defaultDay = new URLSearchParams(search).get('day') || new URLSearchParams(search).get('season') ? '' : 4;
+        const defaultDay = new URLSearchParams(search).get('day') || (new URLSearchParams(search).get('season') ? '' : 4);
 
         const { batters, pitchers, teams, error, results, searchInput } = this.state;
         const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
