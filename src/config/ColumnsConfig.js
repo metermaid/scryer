@@ -380,7 +380,16 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
         'dataIndex': 'outcomes',
         'title': 'Outcomes',
         ...getColumnArraySortProps('outcomes'),
-        ...getColumnSearchPropsShim('outcomes')
+        ...getColumnSearchPropsShim('outcomes'),
+        filters: [
+          {value: "any", text: "Any"},
+          {value: "incinerate", text: "Incineration" },
+          {value: "eanut", text: "Peanut" },
+          {value: "shuffle", text: "Shuffle" },
+          {value: "eedback", text: "Feedback" },
+          {value: "everb", text: "Reverb" }
+        ],
+        onFilter: (value, record) => value == "any" ? LodashGet(record, 'outcomes') : LodashGet(record, 'outcomes').includes(value)
       },
       {
         'dataIndex': 'shame',
