@@ -1,17 +1,14 @@
 import React from 'react';
 import { Alert, Button, Form, InputNumber, Layout, Table } from 'antd';
 import { CSVLink } from 'react-csv';
-import LodashGet from 'lodash/get';
 import LodashFind from 'lodash/find';
 import LodashIsEq from 'lodash/isEqual';
 import LodashUniqWith from 'lodash/uniqWith';
 
 import { gameAPIColumns } from './config/ColumnsConfig';
 
-import { loadJson } from './services/GameArchive';
+import { getGamesBySeason } from './services/GameArchive';
 import Blaseball from './services/Blaseball';
-
-const localJson = loadJson();
 
 const formLayout = {
     labelCol: { span: 8 },
@@ -45,18 +42,12 @@ class Games extends React.Component {
     }
 
     getGame(season, day) {
-        let localGet = LodashGet(localJson, [season, day], false);
-        if (localGet) {
-            this.setState({results: LodashUniqWith(localGet.concat(this.state.results), LodashIsEq), error: null });
-            return Promise.resolve(localGet);
-        } else {
-            return Blaseball.getGames(season, day)
-                .then(results => {
-                    this.setState({results: LodashUniqWith(results.concat(this.state.results), LodashIsEq), error: null });
-                    return results;
-                })
-                .catch(/* istanbul ignore next */ error => console.log(error));
-        }
+        return Blaseball.getGames(season, day)
+            .then(results => {
+                this.setState({results: LodashUniqWith(results.concat(this.state.results), LodashIsEq), error: null });
+                return results;
+            })
+            .catch(/* istanbul ignore next */ error => console.log(error));
     }
 
     onFinish (values) {
@@ -66,18 +57,25 @@ class Games extends React.Component {
         if (values.season && values.day) {
             return this.getGame(parseInt(values.season) - 1, parseInt(values.day) - 1);
         } else if (values.season) {
-            const days = Array.from(Array(150).keys());
-            days.reduce(async (previousPromise, nextDay) => {
-                const results = await previousPromise;
+            const localGet = getGamesBySeason(parseInt(values.season) - 1);
+            console.log(localGet);
+            if (localGet.length > 0) {
+                this.setState({results: LodashUniqWith(localGet.concat(this.state.results), LodashIsEq), error: null });
+                return Promise.resolve(localGet);
+            } else {
+                const days = Array.from(Array(150).keys());
+                days.reduce(async (previousPromise, nextDay) => {
+                    const results = await previousPromise;
 
-                const validResults = results && results.length && LodashFind(results, (result) => result.gameStart);
+                    const validResults = results && results.length && LodashFind(results, (result) => result.gameStart);
 
-                if (typeof results === "boolean" || validResults) {
-                    return this.getGame(parseInt(values.season) - 1, nextDay);
-                } else {
-                    return Promise.resolve([]);
-                }
-            }, Promise.resolve(true));
+                    if (typeof results === "boolean" || validResults) {
+                        return this.getGame(parseInt(values.season) - 1, nextDay);
+                    } else {
+                        return Promise.resolve([]);
+                    }
+                }, Promise.resolve(true));
+            }
         }
     }
 
@@ -93,7 +91,7 @@ class Games extends React.Component {
 
     render () {
         const search = this.props.location.search;
-        const defaultSeason = new URLSearchParams(search).get('season') || 5;
+        const defaultSeason = new URLSearchParams(search).get('season') || 4;
         const defaultDay = new URLSearchParams(search).get('day') || '';
 
         const { batters, pitchers, teams, error, results, searchInput } = this.state;
