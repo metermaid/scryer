@@ -302,10 +302,15 @@ export const playerStatColumns = (batters, teams, searchInput, handleSearch, han
     ];
 };
 
-export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSearch, handleReset) => {
+export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSearch, handleReset, search) => {
     const getColumnNumericalSortAndSearchPropsShim = (field_name) => {
       return getColumnNumericalSortAndSearchProps(field_name, searchInput, handleSearch, handleReset)
     };
+
+    const getSearchParams = (column) => {
+      const searchParams = search.get(column);
+      return searchParams ? searchParams.split(',') : null;
+    }
     return [
       {
         'dataIndex': 'id',
@@ -317,6 +322,7 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'season',
         'title': 'Season',
+        'defaultFilteredValue': getSearchParams('season'),
         'render': (text, record, index) => text+1,
         ...getColumnNumericalSortProps('season'),
         ...getColumnZeroIndexedSearchProps('season', searchInput, handleSearch, handleReset)
@@ -324,6 +330,7 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'day',
         'title': 'Day',
+        'defaultFilteredValue': getSearchParams('day'),
         'render': (text, record, index) => text+1,
         ...getColumnNumericalSortProps('day'),
         ...getColumnZeroIndexedSearchProps('day', searchInput, handleSearch, handleReset)
@@ -331,32 +338,38 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'match',
         'title': 'Match',
+        'defaultFilteredValue': getSearchParams('match'),
         ...getColumnTeamFilterProps(teams, 'match'),
         ...getColumnAlphaSortProps('match')
       },
       {
         'dataIndex': 'homeScore',
         'title': 'Home Score',
+        'defaultFilteredValue': getSearchParams('homeScore'),
         ...getColumnNumericalSortAndSearchPropsShim('homeScore')
       },
       {
         'dataIndex': 'awayScore',
         'title': 'Away Score',
+        'defaultFilteredValue': getSearchParams('awayScore'),
         ...getColumnNumericalSortAndSearchPropsShim('awayScore')
       },
       {
         'dataIndex': 'homeOdds',
         'title': 'Home Odds',
+        'defaultFilteredValue': getSearchParams('homeOdds'),
         ...getColumnNumericalSortAndSearchPropsShim('homeOdds')
       },
       {
         'dataIndex': 'awayOdds',
         'title': 'Away Odds',
+        'defaultFilteredValue': getSearchParams('awayOdds'),
         ...getColumnNumericalSortAndSearchPropsShim('awayOdds')
       },
       {
         'dataIndex': 'homePitcher',
         'title': 'Home Pitcher',
+        'defaultFilteredValue': getSearchParams('homePitcherName'),
         'render': (text, record, index) => renderPlayer(text, pitchers),
         ...getColumnPlayerFilterProps(pitchers, 'homePitcherName'),
         ...getColumnAlphaSortProps('homePitcherName')
@@ -364,6 +377,7 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'awayPitcher',
         'title': 'Away Pitcher',
+        'defaultFilteredValue': getSearchParams('awayPitcherName'),
         'render': (text, record, index) => renderPlayer(text, pitchers),
         ...getColumnPlayerFilterProps(pitchers, 'awayPitcherName'),
         ...getColumnAlphaSortProps('awayPitcherName')
@@ -371,13 +385,15 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'inning',
         'title': 'Inning',
+        'defaultFilteredValue': getSearchParams('inning'),
         ...getColumnNumericalSortAndSearchPropsShim('inning')
       },
       {
         'dataIndex': 'outcomes',
         'title': 'Outcomes',
+        'defaultFilteredValue': getSearchParams('outcomes'),
         ...getColumnArraySortProps('outcomes'),
-        filters: [
+        'filters': [
           {value: "any", text: "Any"},
           {value: "incinerate", text: "Incineration" },
           {value: "eanut", text: "Peanut" },
@@ -385,7 +401,8 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
           {value: "eedback", text: "Feedback" },
           {value: "everb", text: "Reverb" }
         ],
-        onFilter: (value, record) => {
+        'render': (text, record, index) => renderArray(text),
+        'onFilter': (value, record) => {
           const outcomes = LodashGet(record, 'outcomes', []);
           return outcomes && Array.isArray(outcomes) && outcomes.length > 0 && (value === "any" ||
             outcomes.findIndex(outcome => outcome && outcome.includes(value)) >= 0);
@@ -394,6 +411,7 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'shame',
         'title': 'Shame',
+        'defaultFilteredValue': getSearchParams('shame'),
         'render': (text, record, index) => text ? "TRUE" : "FALSE",
         ...getColumnNumericalSortProps('shame'),
         filters: [{value: true, text: "TRUE"}, {value: false, text: "FALSE" }],
@@ -402,6 +420,7 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'weatherName',
         'title': 'Weather',
+        'defaultFilteredValue': getSearchParams('weatherName'),
         ...getColumnAlphaSortProps('weatherName'),
         filters: weatherTypes,
         onFilter: (value, record) => LodashGet(record, 'weather') === value

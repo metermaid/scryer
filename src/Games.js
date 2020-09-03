@@ -14,6 +14,7 @@ class Games extends React.Component {
         this.state = { pitchers: [], teams: [], results: [] };
         this.getGame = this.getGame.bind(this);
         this.getGames = this.getGames.bind(this);
+        this.handleChange = this.handleChange.bind(this);
         this.handleSearch = this.handleSearch.bind(this);
         this.handleReset = this.handleReset.bind(this);
     }
@@ -64,17 +65,28 @@ class Games extends React.Component {
         }, Promise.resolve(true));
     }
 
+    handleChange (pagination, filters, sorter) {
+        Object.keys(filters).forEach((key) => (filters[key] === null) && delete filters[key]);
+        const pathValues = new URLSearchParams(filters);
+        this.props.history.push({ search: pathValues.toString() });
+        console.log('Various parameters', pagination, filters, sorter);
+        this.setState({
+            filteredInfo: filters,
+            sortedInfo: sorter
+        });
+    };
+
     handleSearch (selectedKeys, confirm, dataIndex) {
         confirm();
-        this.setState({ searchText: selectedKeys[0], searchedColumn: dataIndex });
     }
 
     handleReset (clearFilters) {
         clearFilters();
-        this.setState({ searchText: '' });
     }
 
     render () {
+        const search = new URLSearchParams(this.props.location.search);
+
         const { batters, pitchers, teams, results, searchInput } = this.state;
         const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
 
@@ -82,11 +94,12 @@ class Games extends React.Component {
             <Layout.Content>
                 <div className='results-list'>
                     {csvLink}
-                    <Table dataSource={results} 
+                    <Table dataSource={results}
                         bordered
-                        columns={gameAPIColumns(batters, pitchers, teams, searchInput, this.handleSearch, this.handleReset)}
+                        columns={gameAPIColumns(batters, pitchers, teams, searchInput, this.handleSearch, this.handleReset, search)}
                         pagination={{ defaultPageSize: 50 }}
                         scroll={{ x: 'max-content' }}
+                        onChange={this.handleChange}
                         />
                 </div>
             </Layout.Content>
