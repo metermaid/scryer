@@ -399,7 +399,7 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
           {value: "eanut", text: "Peanut" },
           {value: "shuffle", text: "Shuffle" },
           {value: "eedback", text: "Feedback" },
-          {value: "everb", text: "Reverb" }
+          {value: "Reverberating", text: "Reverberating" }
         ],
         'render': (text, record, index) => renderArray(text),
         'onFilter': (value, record) => {
