@@ -303,9 +303,6 @@ export const playerStatColumns = (batters, teams, searchInput, handleSearch, han
 };
 
 export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSearch, handleReset) => {
-    const getColumnSearchPropsShim = (field_name) => {
-      return getColumnSearchProps(field_name, searchInput, handleSearch, handleReset)
-    };
     const getColumnNumericalSortAndSearchPropsShim = (field_name) => {
       return getColumnNumericalSortAndSearchProps(field_name, searchInput, handleSearch, handleReset)
     };
@@ -380,7 +377,6 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
         'dataIndex': 'outcomes',
         'title': 'Outcomes',
         ...getColumnArraySortProps('outcomes'),
-        ...getColumnSearchPropsShim('outcomes'),
         filters: [
           {value: "any", text: "Any"},
           {value: "incinerate", text: "Incineration" },
@@ -389,7 +385,11 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
           {value: "eedback", text: "Feedback" },
           {value: "everb", text: "Reverb" }
         ],
-        onFilter: (value, record) => value == "any" ? LodashGet(record, 'outcomes') : LodashGet(record, 'outcomes').includes(value)
+        onFilter: (value, record) => {
+          const outcomes = LodashGet(record, 'outcomes', []);
+          return outcomes && Array.isArray(outcomes) && outcomes.length > 0 && (value === "any" ||
+            outcomes.findIndex(outcome => outcome && outcome.includes(value)) >= 0);
+        }
       },
       {
         'dataIndex': 'shame',

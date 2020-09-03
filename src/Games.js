@@ -1,12 +1,17 @@
 import React from 'react';
 import { Alert, Button, Form, InputNumber, Layout, Table } from 'antd';
 import { CSVLink } from 'react-csv';
-import LodashUniqWith from 'lodash/uniqWith';
+import LodashGet from 'lodash/get';
 import LodashFind from 'lodash/find';
 import LodashIsEq from 'lodash/isEqual';
+import LodashUniqWith from 'lodash/uniqWith';
+
 import { gameAPIColumns } from './config/ColumnsConfig';
 
+import { loadJson } from './services/GameArchive';
 import Blaseball from './services/Blaseball';
+
+const localJson = loadJson();
 
 const formLayout = {
     labelCol: { span: 8 },
@@ -40,12 +45,18 @@ class Games extends React.Component {
     }
 
     getGame(season, day) {
-        return Blaseball.getGames(season, day)
-            .then(results => {
-                this.setState({results: LodashUniqWith(results.concat(this.state.results), LodashIsEq), error: null });
-                return results;
-            })
-            .catch(/* istanbul ignore next */ error => console.log(error));
+        let localGet = LodashGet(localJson, [season, day], false);
+        if (localGet) {
+            this.setState({results: LodashUniqWith(localGet.concat(this.state.results), LodashIsEq), error: null });
+            return Promise.resolve(localGet);
+        } else {
+            return Blaseball.getGames(season, day)
+                .then(results => {
+                    this.setState({results: LodashUniqWith(results.concat(this.state.results), LodashIsEq), error: null });
+                    return results;
+                })
+                .catch(/* istanbul ignore next */ error => console.log(error));
+        }
     }
 
     onFinish (values) {
@@ -83,7 +94,7 @@ class Games extends React.Component {
     render () {
         const search = this.props.location.search;
         const defaultSeason = new URLSearchParams(search).get('season') || 5;
-        const defaultDay = new URLSearchParams(search).get('day') || (new URLSearchParams(search).get('season') ? '' : 4);
+        const defaultDay = new URLSearchParams(search).get('day') || '';
 
         const { batters, pitchers, teams, error, results, searchInput } = this.state;
         const csvLink = results && results.length ? (<CSVLink data={results}>Download CSV</CSVLink>) : '';
