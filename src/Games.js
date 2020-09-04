@@ -50,7 +50,7 @@ class Games extends React.Component {
         const localGet = getGamesFromArchive();
         this.setState({results: localGet, error: null });
 
-        const days = Array(150 - lastDay + 1).fill().map((_, idx) => lastDay + idx);
+        const days = Array(150 - (lastDay + 1) + 1).fill().map((_, idx) => (lastDay + 1) + idx);
 
         return days.reduce(async (previousPromise, nextDay) => {
             const results = await previousPromise;
