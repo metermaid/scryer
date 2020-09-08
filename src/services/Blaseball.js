@@ -6,15 +6,8 @@ import LodashPick from 'lodash/pick';
 import LodashSortBy from 'lodash/sortBy';
 import LodashUniqBy from 'lodash/uniqBy';
 import AllTeams from './../backups/allTeams';
-import BackupBatters from './../backups/BackupBatters';
-import BackupPitchers from './../backups/BackupPitchers';
 import { weatherTypes } from './../config/EventsConfig';
 import { checkCache, cachePromise, cacheService } from './CachingManager';
-
-const backups = {
-    'lineup': BackupBatters,
-    'rotation': BackupPitchers
-}
 
 export const getPlayers = (type) => {
     return getPlayersFromBlaseball(type).then(data => cacheService(type + 'Players', LodashSortBy(LodashFlatten(data), ['name'])));
@@ -63,16 +56,12 @@ const processTeam = (team, type) => {
 
     /* istanbul ignore next line */
     if (cache) { return cache; }
-    const ids = LodashGet(team, type).join(',');
+    const ids = LodashGet(team, type).concat(getBonusPlayers(team, type)).join(',');
     const results = axios.get(`https://cors-proxy.blaseball-reference.com/database/players`, { params: { ids: ids }})
         .then(response => 
             cacheService(dataKey, 
-                response && response.data && LodashUniqBy(response.data.map(player => getPlayerObject(player, team, type)).concat(getBonusPlayers(backups[type], team, type)), 'id')
-            ))
-        .catch((error) => {
-            console.log(error);
-            return getBonusPlayers(backups[type], team, type);
-        });
+                response && response.data && LodashUniqBy(response.data.map(player => getPlayerObject(player, team, type)), 'id')
+            ));
 
     return cachePromise(dataKey, results);
 };
@@ -87,7 +76,8 @@ export const parseGameObject = (game) => {
 
 export const getPlayerObject = (player, team, type) => {
     return {
-        ...player,
+        id: player.id,
+        name: player.name,
         label: `${player.name} (${String.fromCodePoint(team.emoji)} ${team.nickname})`,
         position: type,
         value: player.id,
@@ -96,13 +86,12 @@ export const getPlayerObject = (player, team, type) => {
     };
 };
 
-const cleanList = (playerList) => {
-    return playerList.map(player => LodashPick(player, ['value', 'searchkey', 'label', 'name']));
+const getBonusPlayers = (team, type) => {
+    return LodashGet(AllTeams.find(someTeam => someTeam.id.includes(team.id)), type, []);
 };
 
-const getBonusPlayers = (playerList, team, type) => {
-    return playerList.filter(player => !player.team.localeCompare(team.fullName) && !player.position.localeCompare(type))
-        .map(player => getPlayerObject(player, team));
+const cleanList = (playerList) => {
+    return playerList.map(player => LodashPick(player, ['value', 'searchkey', 'label', 'name']));
 };
 
 export default {
