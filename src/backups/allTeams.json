@@ -131,7 +131,8 @@
             "2b1cb8a2-9eba-4fce-85cf-5d997ec45714",
             "3064c7d6-91cc-4c2a-a433-1ce1aabc1ad4",
             "ab9eb213-0917-4374-a259-458295045021",
-            "18798b8f-6391-4cb2-8a5f-6fb540d646d5"
+            "18798b8f-6391-4cb2-8a5f-6fb540d646d5",
+            "f7715b05-ee69-43e5-a0e5-8e3d34270c82"
         ],
         "nickname": "Flowers",
         "rotation": [
@@ -224,7 +225,9 @@
             "1ba715f2-caa3-44c0-9118-b045ea702a34"
         ],
         "nickname": "Pies",
-        "rotation": []
+        "rotation": [
+            "2ae8cbfc-2155-4647-9996-3f2591091baf"
+        ]
     },
     {
         "emoji": "0x1F45F",
