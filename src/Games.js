@@ -55,7 +55,7 @@ class Games extends React.Component {
         return days.reduce(async (previousPromise, nextDay) => {
             const results = await previousPromise;
 
-            const validResults = results && results.length && LodashFind(results, (result) => result.gameEnd);
+            const validResults = results && results.length && LodashFind(results, (result) => result.gameComplete);
 
             if (typeof results === "boolean" || validResults) {
                 return this.getGame(lastSeason, nextDay);
