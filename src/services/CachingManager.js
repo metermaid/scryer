@@ -1,6 +1,6 @@
 import { cacheKey, loadData, saveData } from './LocalStorage';
 
-const cacheTTL = 60000;
+const cacheTTL = 600;
 
 let cachedPromises = {};
 let cachedServices = {};
