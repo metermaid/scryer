@@ -29,7 +29,10 @@ export const renderTeam = (teamId, teams) => {
 };
 
 const getColumnAlphaSortProps = (field_name) => ({
-  sorter: (a, b) => LodashGet(a, field_name, '').localeCompare(LodashGet(b, field_name, ''))
+  sorter: (a, b) => {
+    const a_field = LodashGet(a, field_name, '');
+    return a_field ? a_field.localeCompare(LodashGet(b, field_name, '')) : -1;
+  }
 });
 
 const getColumnArraySortProps = (field_name) => ({
