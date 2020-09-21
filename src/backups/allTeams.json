@@ -41,7 +41,11 @@
         "lineup": [
             "5b9727f7-6a20-47d2-93d9-779f0a85c4ee",
             "70a458ed-25ca-4ff8-97fc-21cbf58f2c2a",
-            "d744f534-2352-472b-9e42-cd91fa540f1b"
+            "d744f534-2352-472b-9e42-cd91fa540f1b",
+            "bd4c6837-eeaa-4675-ae48-061efa0fd11a",
+            "d1a7c13f-8e78-4d2e-9cae-ebf3a5fcdb5d",
+            "98a98014-9636-4ece-a46a-4625b47c65d5",
+            "248ccf3d-d5f6-4b69-83d9-40230ca909cd"
         ],
         "nickname": "Moist Talkers",
         "rotation": []
@@ -52,7 +56,8 @@
         "id": "adc5b394-8f76-416d-9ce9-813706877b84",
         "lineup": [
             "c73d59dd-32a0-49ce-8ab4-b2dbb7dc94ec",
-            "33fbfe23-37bd-4e37-a481-a87eadb8192d"
+            "33fbfe23-37bd-4e37-a481-a87eadb8192d",
+            "493a83de-6bcf-41a1-97dd-cc5e150548a3"
         ],
         "nickname": "Breath Mints",
         "rotation": []
@@ -64,7 +69,8 @@
         "lineup": [
             "4bda6584-6c21-4185-8895-47d07e8ad0c0",
             "64b055d1-b691-4e0c-8583-fc08ba663846",
-            "8ba7e1ff-4c6d-4963-8e0f-7096d14f4b12"
+            "8ba7e1ff-4c6d-4963-8e0f-7096d14f4b12",
+            "2ca0c790-e1d5-4a14-ab3c-e9241c87fc23"
         ],
         "nickname": "Dalé",
         "rotation": []
@@ -169,7 +175,9 @@
         "fullName": "New York Millennials",
         "id": "36569151-a2fb-43c1-9df7-2df512424c82",
         "lineup": [
-            "a1628d97-16ca-4a75-b8df-569bae02bef9"
+            "a1628d97-16ca-4a75-b8df-569bae02bef9",
+            "f967d064-0eaf-4445-b225-daed700e044b",
+            "7310c32f-8f32-40f2-b086-54555a2c0e86"
         ],
         "nickname": "Millennials",
         "rotation": [
@@ -184,7 +192,8 @@
             "c83a13f6-ee66-4b1c-9747-faa67395a6f1",
             "c83f0fe0-44d1-4342-81e8-944bb38f8e23",
             "76c4853b-7fbc-4688-8cda-c5b8de1724e4",
-            "05bd08d5-7d9f-450b-abfa-1788b8ee8b91"
+            "05bd08d5-7d9f-450b-abfa-1788b8ee8b91",
+            "14d88771-7a96-48aa-ba59-07bae1733e96"
         ],
         "nickname": "Steaks",
         "rotation": []
@@ -193,7 +202,9 @@
         "emoji": "0x1F357",
         "fullName": "Mexico City Wild Wings",
         "id": "57ec08cc-0411-4643-b304-0e80dbc15ac7",
-        "lineup": [],
+        "lineup": [
+            "cd68d3a6-7fbc-445d-90f1-970c955e32f4"
+        ],
         "nickname": "Wild Wings",
         "rotation": []
     },
@@ -202,10 +213,15 @@
         "fullName": "Hades Tigers",
         "id": "747b8e4a-7e50-4638-a973-ea7950a3e739",
         "lineup": [
-            "d74a2473-1f29-40fa-a41e-66fa2281dfca"
+            "d74a2473-1f29-40fa-a41e-66fa2281dfca",
+            "be35caba-b16a-4e0d-b927-4da857f4cdb5",
+            "70ccff1e-6b53-40e2-8844-0a28621cb33e",
+            "a311c089-0df4-46bd-9f5d-8c45c7eb5ae2"
         ],
         "nickname": "Tigers",
-        "rotation": []
+        "rotation": [
+            "afc90398-b891-4cdf-9dea-af8a3a79d793"
+        ]
     },
     {
         "emoji": "0x1F525",
