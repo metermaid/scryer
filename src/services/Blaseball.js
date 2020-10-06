@@ -20,7 +20,7 @@ export const getGames = (season, day) => {
 
     /* istanbul ignore next line */
     if (cache) { return cache; }
-    results = axios.get(`https://blaseballcors.herokuapp.com/https://www.blaseball.com/database/games`, { params: { season, day }})
+    results = axios.get(`https://cors-proxy.blaseball-reference.com/database/games`, { params: { season, day }})
         .then(response => cacheService(dataKey, response && response.data.map(game => parseGameObject(game))));
 
     return cachePromise(dataKey, results);
@@ -67,10 +67,12 @@ const processTeam = (team, type) => {
 };
 
 export const parseGameObject = (game) => {
+    const homeTeam = AllTeams.find(someTeam => someTeam.id.includes(game.homeTeam));
+    const awayTeam = AllTeams.find(someTeam => someTeam.id.includes(game.awayTeam));
     return {
         ...game,
         weatherName: LodashGet(LodashFind(weatherTypes, { 'value': game.weather}), 'text'),
-        match: `${String.fromCodePoint(game.homeTeamEmoji)} ${game.homeTeamNickname} - ${String.fromCodePoint(game.awayTeamEmoji)} ${game.awayTeamNickname}`
+        match: `${String.fromCodePoint(homeTeam.emoji)} ${homeTeam.nickname} - ${String.fromCodePoint(awayTeam.emoji)} ${awayTeam.nickname}`
     };
 };
 
