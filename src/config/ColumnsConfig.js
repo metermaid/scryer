@@ -325,7 +325,6 @@ export const gameAPIColumns = (batters, pitchers, teams, searchInput, handleSear
       {
         'dataIndex': 'season',
         'title': 'Season',
-        'defaultFilteredValue': getSearchParams('season'),
         'render': (text, record, index) => text+1,
         ...getColumnNumericalSortProps('season'),
         ...getColumnZeroIndexedSearchProps('season', searchInput, handleSearch, handleReset)
